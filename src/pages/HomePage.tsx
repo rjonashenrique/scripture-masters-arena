@@ -2,11 +2,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { profile } = useProfile();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
+  const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
 
   const modes = [
     {

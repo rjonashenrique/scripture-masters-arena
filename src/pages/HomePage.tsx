@@ -23,6 +23,13 @@ export default function HomePage() {
       gradient: 'bg-gradient-gold',
       path: '/quiz?mode=challenge',
     },
+    {
+      title: 'Batalha 1v1',
+      desc: 'Desafie um amigo!',
+      icon: Swords,
+      gradient: 'bg-gradient-primary',
+      path: '/battle',
+    },
   ];
 
   return (

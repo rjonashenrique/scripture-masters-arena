@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 
 export default function HomePage() {

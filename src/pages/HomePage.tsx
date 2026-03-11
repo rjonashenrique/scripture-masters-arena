@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 
 export default function HomePage() {
@@ -22,6 +22,13 @@ export default function HomePage() {
       icon: Zap,
       gradient: 'bg-gradient-gold',
       path: '/quiz?mode=challenge',
+    },
+    {
+      title: 'Batalha 1v1',
+      desc: 'Desafie um amigo!',
+      icon: Swords,
+      gradient: 'bg-gradient-primary',
+      path: '/battle',
     },
   ];
 

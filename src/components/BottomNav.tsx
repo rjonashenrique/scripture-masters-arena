@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Zap, Trophy, User, Map } from 'lucide-react';
+import { BookOpen, Swords, Trophy, User, Map } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const tabs = [
   { path: '/', icon: BookOpen, label: 'Início' },
-  { path: '/challenge', icon: Zap, label: 'Desafio' },
+  { path: '/battle', icon: Swords, label: 'Batalha' },
   { path: '/journey', icon: Map, label: 'Jornada' },
   { path: '/achievements', icon: Trophy, label: 'Troféus' },
   { path: '/profile', icon: User, label: 'Perfil' },
@@ -15,7 +15,7 @@ export default function BottomNav() {
   const location = useLocation();
 
   // Hide nav during quiz
-  if (location.pathname === '/quiz') return null;
+  if (location.pathname === '/quiz' || location.pathname.startsWith('/battle/')) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">

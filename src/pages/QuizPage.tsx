@@ -88,6 +88,8 @@ export default function QuizPage() {
   const handleNext = () => {
     if (currentIndex + 1 >= quizQuestions.length) {
       setFinished(true);
+      // Sync stats to database
+      syncStats(getStats());
     } else {
       setCurrentIndex((i) => i + 1);
       setSelected(null);

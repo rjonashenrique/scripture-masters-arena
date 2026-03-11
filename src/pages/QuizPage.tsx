@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { questions, Question, Category } from '@/data/questions';
-import { recordAnswer } from '@/lib/gameStore';
+import { recordAnswer, getStats } from '@/lib/gameStore';
+import { useProfile } from '@/hooks/useProfile';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];

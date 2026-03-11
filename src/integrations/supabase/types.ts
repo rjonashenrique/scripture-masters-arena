@@ -62,6 +62,81 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          achievements: Json
+          avatar_url: string | null
+          best_streak: number
+          coins: number
+          completed_lessons: Json
+          created_at: string
+          current_streak: number
+          display_name: string
+          easy_answered: number
+          easy_correct: number
+          hard_answered: number
+          hard_correct: number
+          id: string
+          last_play_date: string
+          medium_answered: number
+          medium_correct: number
+          streak_days: number
+          total_answered: number
+          total_correct: number
+          total_points: number
+          total_time_ms: number
+          updated_at: string
+        }
+        Insert: {
+          achievements?: Json
+          avatar_url?: string | null
+          best_streak?: number
+          coins?: number
+          completed_lessons?: Json
+          created_at?: string
+          current_streak?: number
+          display_name?: string
+          easy_answered?: number
+          easy_correct?: number
+          hard_answered?: number
+          hard_correct?: number
+          id: string
+          last_play_date?: string
+          medium_answered?: number
+          medium_correct?: number
+          streak_days?: number
+          total_answered?: number
+          total_correct?: number
+          total_points?: number
+          total_time_ms?: number
+          updated_at?: string
+        }
+        Update: {
+          achievements?: Json
+          avatar_url?: string | null
+          best_streak?: number
+          coins?: number
+          completed_lessons?: Json
+          created_at?: string
+          current_streak?: number
+          display_name?: string
+          easy_answered?: number
+          easy_correct?: number
+          hard_answered?: number
+          hard_correct?: number
+          id?: string
+          last_play_date?: string
+          medium_answered?: number
+          medium_correct?: number
+          streak_days?: number
+          total_answered?: number
+          total_correct?: number
+          total_points?: number
+          total_time_ms?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

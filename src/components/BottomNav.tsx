@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Zap, Trophy, User, Map } from 'lucide-react';
+import { BookOpen, Swords, Trophy, User, Map } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const tabs = [
   { path: '/', icon: BookOpen, label: 'Início' },
-  { path: '/challenge', icon: Zap, label: 'Desafio' },
+  { path: '/battle', icon: Swords, label: 'Batalha' },
   { path: '/journey', icon: Map, label: 'Jornada' },
   { path: '/achievements', icon: Trophy, label: 'Troféus' },
   { path: '/profile', icon: User, label: 'Perfil' },

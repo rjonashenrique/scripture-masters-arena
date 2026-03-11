@@ -46,7 +46,7 @@ export default function HomePage() {
             <h1 className="text-2xl font-extrabold font-display text-foreground">
               Bible Quiz <span className="text-gradient-gold">Master</span>
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Aprenda a Bíblia jogando! ✝️</p>
+            <p className="text-sm text-muted-foreground mt-1">Olá, {displayName}! ✝️</p>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 glass-card px-3 py-1.5">

@@ -20,6 +20,7 @@ export default function QuizPage() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode') || 'classic';
   const categoryFilter = searchParams.get('category') as Category | null;
+  const { syncStats } = useProfile();
 
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

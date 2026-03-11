@@ -1,12 +1,19 @@
 import { motion } from 'framer-motion';
 import { getStats, getLevel, ACHIEVEMENTS } from '@/lib/gameStore';
-import { Award, Target, Zap, Clock, TrendingUp, Star } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
+import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
   const accuracy = stats.totalAnswered > 0 ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
   const avgTime = stats.totalAnswered > 0 ? (stats.totalTimeMs / stats.totalAnswered / 1000).toFixed(1) : '0';
+
+  const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
 
   const statCards = [
     { icon: Target, label: 'Respondidas', value: stats.totalAnswered },
@@ -20,7 +27,13 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-hero pb-24">
       <div className="px-5 pt-12 safe-area-top">
-        <h1 className="text-2xl font-extrabold font-display text-foreground mb-6">Meu Perfil</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-extrabold font-display text-foreground">Meu Perfil</h1>
+          <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
+            <LogOut size={16} />
+            <span className="ml-1 text-xs">Sair</span>
+          </Button>
+        </div>
 
         {/* Level card */}
         <motion.div
@@ -31,8 +44,9 @@ export default function ProfilePage() {
           <div className="w-20 h-20 mx-auto rounded-full bg-gradient-gold flex items-center justify-center mb-3 shadow-glow-gold">
             <span className="text-3xl font-extrabold text-secondary-foreground">{level.level}</span>
           </div>
-          <h2 className="text-xl font-bold font-display text-gradient-gold">{level.name}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{stats.totalPoints} pontos totais</p>
+          <h2 className="text-xl font-bold font-display text-gradient-gold">{displayName}</h2>
+          <p className="text-xs text-muted-foreground">{user?.email}</p>
+          <p className="text-sm text-muted-foreground mt-1">{level.name} • {stats.totalPoints} pontos</p>
           <div className="w-full h-2 rounded-full bg-muted mt-3 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}

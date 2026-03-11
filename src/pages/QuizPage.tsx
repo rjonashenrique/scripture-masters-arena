@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { questions, Question, Category } from '@/data/questions';
-import { recordAnswer } from '@/lib/gameStore';
+import { recordAnswer, getStats } from '@/lib/gameStore';
+import { useProfile } from '@/hooks/useProfile';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -19,6 +20,7 @@ export default function QuizPage() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode') || 'classic';
   const categoryFilter = searchParams.get('category') as Category | null;
+  const { syncStats } = useProfile();
 
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -86,6 +88,8 @@ export default function QuizPage() {
   const handleNext = () => {
     if (currentIndex + 1 >= quizQuestions.length) {
       setFinished(true);
+      // Sync stats to database
+      syncStats(getStats());
     } else {
       setCurrentIndex((i) => i + 1);
       setSelected(null);

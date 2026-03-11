@@ -2,11 +2,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { profile } = useProfile();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
+  const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
 
   const modes = [
     {
@@ -41,7 +46,7 @@ export default function HomePage() {
             <h1 className="text-2xl font-extrabold font-display text-foreground">
               Bible Quiz <span className="text-gradient-gold">Master</span>
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Aprenda a Bíblia jogando! ✝️</p>
+            <p className="text-sm text-muted-foreground mt-1">Olá, {displayName}! ✝️</p>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 glass-card px-3 py-1.5">

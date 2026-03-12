@@ -62,6 +62,74 @@ export type Database = {
         }
         Relationships: []
       }
+      church_members: {
+        Row: {
+          church_id: string
+          id: string
+          joined_at: string
+          points_contributed: number
+          user_id: string
+        }
+        Insert: {
+          church_id: string
+          id?: string
+          joined_at?: string
+          points_contributed?: number
+          user_id: string
+        }
+        Update: {
+          church_id?: string
+          id?: string
+          joined_at?: string
+          points_contributed?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_members_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      churches: {
+        Row: {
+          code: string
+          created_at: string
+          denomination: string
+          id: string
+          member_count: number
+          name: string
+          owner_id: string
+          total_points: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          denomination?: string
+          id?: string
+          member_count?: number
+          name: string
+          owner_id: string
+          total_points?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          denomination?: string
+          id?: string
+          member_count?: number
+          name?: string
+          owner_id?: string
+          total_points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           achievements: Json
@@ -142,7 +210,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_church_stats: {
+        Args: { p_church_id: string }
+        Returns: {
+          avg_points: number
+          member_count: number
+          total_points: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -23,6 +23,21 @@ export default function QuizPage() {
   const mode = searchParams.get('mode') || 'classic';
   const categoryFilter = searchParams.get('category') as Category | null;
   const { syncStats } = useProfile();
+  const { user } = useAuth();
+  const [churchId, setChurchId] = useState<string | null>(null);
+
+  // Get user's church for challenge contributions
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('church_members')
+      .select('church_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setChurchId(data.church_id);
+      });
+  }, [user]);
 
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

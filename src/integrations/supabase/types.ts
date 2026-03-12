@@ -62,6 +62,51 @@ export type Database = {
         }
         Relationships: []
       }
+      church_challenge_progress: {
+        Row: {
+          challenge_id: string
+          church_id: string
+          completed: boolean
+          completed_at: string | null
+          current_value: number
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          challenge_id: string
+          church_id: string
+          completed?: boolean
+          completed_at?: string | null
+          current_value?: number
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          challenge_id?: string
+          church_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          current_value?: number
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "church_challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "church_challenge_progress_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       church_members: {
         Row: {
           church_id: string
@@ -205,11 +250,58 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          reward_coins: number
+          target_value: number
+          title: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string
+          description: string
+          icon?: string
+          id?: string
+          reward_coins?: number
+          target_value: number
+          title: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          reward_coins?: number
+          target_value?: number
+          title?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      contribute_challenge_progress: {
+        Args: {
+          p_amount?: number
+          p_challenge_type: string
+          p_church_id: string
+        }
+        Returns: undefined
+      }
       get_church_stats: {
         Args: { p_church_id: string }
         Returns: {

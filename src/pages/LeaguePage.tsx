@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Church, Users, Trophy, Copy, LogOut, Plus, Search, Crown, Medal, Star } from 'lucide-react';
+import { Church, Users, Trophy, Copy, LogOut, Plus, Search, Crown, Medal, Star, Target, Gift, CheckCircle2, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
+import { useWeeklyChallenges } from '@/hooks/useChallenges';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 
 interface ChurchData {
@@ -26,7 +28,7 @@ interface MemberData {
   };
 }
 
-type View = 'lobby' | 'dashboard' | 'ranking';
+type View = 'lobby' | 'dashboard' | 'challenges' | 'ranking';
 
 export default function LeaguePage() {
   const { user } = useAuth();
@@ -36,6 +38,8 @@ export default function LeaguePage() {
   const [members, setMembers] = useState<MemberData[]>([]);
   const [allChurches, setAllChurches] = useState<ChurchData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const { challenges, loading: challengesLoading, fetchChallenges } = useWeeklyChallenges(myChurch?.id || null);
 
   // Create church form
   const [showCreate, setShowCreate] = useState(false);
@@ -47,7 +51,6 @@ export default function LeaguePage() {
     if (!user) return;
     setLoading(true);
 
-    // Check if user is a member of any church
     const { data: membership } = await supabase
       .from('church_members')
       .select('church_id')
@@ -62,7 +65,6 @@ export default function LeaguePage() {
         .single();
 
       if (church) {
-        // Get live stats
         const { data: stats } = await supabase.rpc('get_church_stats', { p_church_id: church.id });
         const s = stats?.[0];
         setMyChurch({
@@ -71,7 +73,6 @@ export default function LeaguePage() {
           member_count: Number(s?.member_count ?? 0),
         });
 
-        // Fetch members
         const { data: mems } = await supabase
           .from('church_members')
           .select('user_id, points_contributed, profiles(display_name, total_points, avatar_url)')
@@ -93,7 +94,6 @@ export default function LeaguePage() {
       .order('total_points', { ascending: false })
       .limit(50);
 
-    // Get live stats for each
     if (data) {
       const enriched = await Promise.all(
         data.map(async (c) => {
@@ -133,7 +133,6 @@ export default function LeaguePage() {
       return;
     }
 
-    // Add self as member
     await supabase
       .from('church_members')
       .insert({ church_id: data.id, user_id: user.id, points_contributed: profile?.total_points || 0 });
@@ -201,6 +200,19 @@ export default function LeaguePage() {
     }
   };
 
+  // Calculate days remaining in week
+  const getDaysRemaining = () => {
+    if (challenges.length === 0) return 0;
+    const endDate = new Date(challenges[0].week_end + 'T23:59:59');
+    const now = new Date();
+    return Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+  };
+
+  const completedCount = challenges.filter(c => c.progress?.completed).length;
+  const totalReward = challenges
+    .filter(c => c.progress?.completed)
+    .reduce((sum, c) => sum + c.reward_coins, 0);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
@@ -223,18 +235,18 @@ export default function LeaguePage() {
 
       {/* Tabs */}
       {myChurch && (
-        <div className="px-5 mb-4 flex gap-2">
-          {(['dashboard', 'ranking'] as const).map((tab) => (
+        <div className="px-5 mb-4 flex gap-2 overflow-x-auto no-scrollbar">
+          {(['dashboard', 'challenges', 'ranking'] as const).map((tab) => (
             <button
               key={tab}
-              onClick={() => { setView(tab); if (tab === 'ranking') fetchAllChurches(); }}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+              onClick={() => { setView(tab); if (tab === 'ranking') fetchAllChurches(); if (tab === 'challenges') fetchChallenges(); }}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
                 view === tab
                   ? 'bg-secondary text-secondary-foreground'
                   : 'glass-card text-muted-foreground'
               }`}
             >
-              {tab === 'dashboard' ? 'Minha Igreja' : 'Ranking'}
+              {tab === 'dashboard' ? 'Minha Igreja' : tab === 'challenges' ? '🎯 Desafios' : 'Ranking'}
             </button>
           ))}
         </div>
@@ -242,7 +254,7 @@ export default function LeaguePage() {
 
       <div className="px-5 space-y-4">
         <AnimatePresence mode="wait">
-          {/* LOBBY - No church yet */}
+          {/* LOBBY */}
           {view === 'lobby' && !myChurch && (
             <motion.div
               key="lobby"
@@ -251,7 +263,6 @@ export default function LeaguePage() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-4"
             >
-              {/* Join */}
               <div className="glass-card p-5">
                 <h3 className="font-bold font-display text-foreground mb-3 flex items-center gap-2">
                   <Search size={18} className="text-secondary" />
@@ -275,7 +286,6 @@ export default function LeaguePage() {
                 </div>
               </div>
 
-              {/* Create */}
               {!showCreate ? (
                 <button
                   onClick={() => setShowCreate(true)}
@@ -312,24 +322,16 @@ export default function LeaguePage() {
                     className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
                   />
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowCreate(false)}
-                      className="flex-1 glass-card py-2.5 rounded-xl text-sm font-semibold text-muted-foreground"
-                    >
+                    <button onClick={() => setShowCreate(false)} className="flex-1 glass-card py-2.5 rounded-xl text-sm font-semibold text-muted-foreground">
                       Cancelar
                     </button>
-                    <button
-                      onClick={handleCreate}
-                      disabled={!churchName.trim()}
-                      className="flex-1 bg-gradient-gold text-secondary-foreground py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
-                    >
+                    <button onClick={handleCreate} disabled={!churchName.trim()} className="flex-1 bg-gradient-gold text-secondary-foreground py-2.5 rounded-xl text-sm font-bold disabled:opacity-50">
                       Criar
                     </button>
                   </div>
                 </motion.div>
               )}
 
-              {/* Top churches preview */}
               {allChurches.length > 0 && (
                 <div>
                   <h3 className="font-bold font-display text-foreground mb-3 flex items-center gap-2">
@@ -362,7 +364,6 @@ export default function LeaguePage() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-4"
             >
-              {/* Church card */}
               <div className="glass-card p-5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="flex items-start justify-between mb-4">
@@ -378,23 +379,17 @@ export default function LeaguePage() {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <Trophy size={14} className="text-secondary" />
-                    </div>
+                    <div className="flex items-center justify-center gap-1 mb-1"><Trophy size={14} className="text-secondary" /></div>
                     <p className="text-lg font-bold text-gradient-gold">{myChurch.total_points.toLocaleString()}</p>
                     <p className="text-[10px] text-muted-foreground">Pontos</p>
                   </div>
                   <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <Users size={14} className="text-secondary" />
-                    </div>
+                    <div className="flex items-center justify-center gap-1 mb-1"><Users size={14} className="text-secondary" /></div>
                     <p className="text-lg font-bold text-foreground">{myChurch.member_count}</p>
                     <p className="text-[10px] text-muted-foreground">Membros</p>
                   </div>
                   <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <Star size={14} className="text-secondary" />
-                    </div>
+                    <div className="flex items-center justify-center gap-1 mb-1"><Star size={14} className="text-secondary" /></div>
                     <p className="text-lg font-bold text-foreground">
                       {myChurch.member_count > 0 ? Math.round(myChurch.total_points / myChurch.member_count) : 0}
                     </p>
@@ -402,6 +397,28 @@ export default function LeaguePage() {
                   </div>
                 </div>
               </div>
+
+              {/* Weekly challenges preview */}
+              {challenges.length > 0 && (
+                <button
+                  onClick={() => setView('challenges')}
+                  className="w-full glass-card p-4 flex items-center gap-3 text-left"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
+                    <Target size={20} className="text-secondary-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold font-display text-foreground">Desafios Semanais</p>
+                    <p className="text-xs text-muted-foreground">
+                      {completedCount}/{challenges.length} completos · {getDaysRemaining()} dias restantes
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Gift size={14} className="text-secondary" />
+                    <span className="text-xs font-bold text-secondary">{totalReward}</span>
+                  </div>
+                </button>
+              )}
 
               {/* Members list */}
               <div>
@@ -418,7 +435,7 @@ export default function LeaguePage() {
                     className={`glass-card p-3 mb-2 flex items-center gap-3 ${m.user_id === user?.id ? 'ring-1 ring-secondary/30' : ''}`}
                   >
                     <span className="w-7 text-center">
-                      {i === 0 ? <Crown size={16} className="text-secondary mx-auto" /> : 
+                      {i === 0 ? <Crown size={16} className="text-secondary mx-auto" /> :
                        i === 1 ? <Medal size={16} className="text-muted-foreground mx-auto" /> :
                        <span className="text-xs font-bold text-muted-foreground">{i + 1}º</span>}
                     </span>
@@ -438,7 +455,6 @@ export default function LeaguePage() {
                 ))}
               </div>
 
-              {/* Leave button */}
               <button
                 onClick={handleLeave}
                 className="w-full glass-card p-3 flex items-center justify-center gap-2 text-destructive text-sm font-semibold"
@@ -446,6 +462,115 @@ export default function LeaguePage() {
                 <LogOut size={16} />
                 Sair da Igreja
               </button>
+            </motion.div>
+          )}
+
+          {/* CHALLENGES */}
+          {view === 'challenges' && myChurch && (
+            <motion.div
+              key="challenges"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-4"
+            >
+              {/* Header card */}
+              <div className="glass-card p-5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
+                    <Target size={20} className="text-secondary-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold font-display text-foreground">Desafios Semanais</h3>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock size={12} />
+                      <span>{getDaysRemaining()} dias restantes</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-gradient-gold">{completedCount}</p>
+                      <p className="text-[10px] text-muted-foreground">Completos</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-foreground">{challenges.length}</p>
+                      <p className="text-[10px] text-muted-foreground">Total</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 glass-card px-3 py-1.5">
+                    <Gift size={14} className="text-secondary" />
+                    <span className="text-sm font-bold text-secondary">{totalReward} moedas ganhas</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Challenge cards */}
+              {challengesLoading ? (
+                <div className="text-center py-8 text-muted-foreground text-sm">Carregando desafios...</div>
+              ) : challenges.length === 0 ? (
+                <div className="text-center py-12">
+                  <Target size={40} className="text-muted-foreground mx-auto mb-3 opacity-50" />
+                  <p className="text-muted-foreground text-sm">Nenhum desafio ativo esta semana</p>
+                  <p className="text-muted-foreground text-xs mt-1">Novos desafios são gerados toda segunda-feira</p>
+                </div>
+              ) : (
+                challenges.map((challenge, i) => {
+                  const progress = challenge.progress;
+                  const currentValue = progress?.current_value || 0;
+                  const percentage = Math.min(100, (currentValue / challenge.target_value) * 100);
+                  const isCompleted = progress?.completed || false;
+
+                  return (
+                    <motion.div
+                      key={challenge.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.08 }}
+                      className={`glass-card p-4 relative overflow-hidden ${isCompleted ? 'ring-1 ring-success/30' : ''}`}
+                    >
+                      {isCompleted && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle2 size={18} className="text-success" />
+                        </div>
+                      )}
+
+                      <div className="flex items-start gap-3 mb-3">
+                        <span className="text-2xl">{challenge.icon}</span>
+                        <div className="flex-1">
+                          <p className="font-bold font-display text-foreground text-sm">{challenge.title}</p>
+                          <p className="text-xs text-muted-foreground">{challenge.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Progress 
+                          value={percentage} 
+                          className={`h-2.5 ${isCompleted ? '[&>div]:bg-gradient-success' : '[&>div]:bg-gradient-gold'}`}
+                        />
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {currentValue.toLocaleString()} / {challenge.target_value.toLocaleString()}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <Gift size={12} className="text-secondary" />
+                            <span className={`text-xs font-bold ${isCompleted ? 'text-success' : 'text-secondary'}`}>
+                              {isCompleted ? '✓ ' : ''}{challenge.reward_coins} moedas
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })
+              )}
+
+              <p className="text-center text-[10px] text-muted-foreground pb-4">
+                Jogue quiz para contribuir automaticamente com os desafios da sua igreja!
+              </p>
             </motion.div>
           )}
 
@@ -463,7 +588,6 @@ export default function LeaguePage() {
                 Ranking das Igrejas
               </h3>
 
-              {/* Podium */}
               {allChurches.length >= 3 && (
                 <div className="flex items-end justify-center gap-2 py-4">
                   {[allChurches[1], allChurches[0], allChurches[2]].map((c, i) => {

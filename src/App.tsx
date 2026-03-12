@@ -13,6 +13,7 @@ import ChallengePage from "@/pages/ChallengePage";
 import BattleLobbyPage from "@/pages/BattleLobbyPage";
 import BattleGamePage from "@/pages/BattleGamePage";
 import RankingPage from "@/pages/RankingPage";
+import LeaguePage from "@/pages/LeaguePage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import { useAuth } from "@/contexts/AuthContext";

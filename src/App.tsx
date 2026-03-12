@@ -47,6 +47,7 @@ function AppRoutes() {
         <Route path="/challenge" element={<ChallengePage />} />
         <Route path="/battle" element={<BattleLobbyPage />} />
         <Route path="/battle/:id" element={<BattleGamePage />} />
+        <Route path="/ranking" element={<RankingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
         <Route path="/journey" element={<JourneyPage />} />

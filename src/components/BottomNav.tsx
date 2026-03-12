@@ -5,8 +5,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const tabs = [
   { path: '/', icon: BookOpen, label: 'Início' },
   { path: '/battle', icon: Swords, label: 'Batalha' },
+  { path: '/ranking', icon: Trophy, label: 'Ranking' },
   { path: '/journey', icon: Map, label: 'Jornada' },
-  { path: '/achievements', icon: Trophy, label: 'Troféus' },
   { path: '/profile', icon: User, label: 'Perfil' },
 ];
 

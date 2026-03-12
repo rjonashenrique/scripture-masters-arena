@@ -94,6 +94,25 @@ export default function QuizPage() {
     setShowResult(true);
 
     const stats = recordAnswer(correct, q.difficulty, timeMs);
+
+    // Contribute to church challenges
+    if (churchId) {
+      supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'questions_answered', p_amount: 1 });
+      if (correct) {
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'correct_answers', p_amount: 1 });
+        if (q.difficulty === 'hard') {
+          supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'hard_correct', p_amount: 1 });
+        }
+        const pts = q.difficulty === 'easy' ? 10 : q.difficulty === 'medium' ? 20 : 40;
+        const bonus = mode === 'challenge' ? Math.max(0, Math.floor((10000 - timeMs) / 1000)) : 0;
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'points_earned', p_amount: pts + bonus });
+        if (timeMs < 5000) {
+          supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'fast_answers', p_amount: 1 });
+        }
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'streak_total', p_amount: 1 });
+      }
+    }
+
     if (correct) {
       const pts = q.difficulty === 'easy' ? 10 : q.difficulty === 'medium' ? 20 : 40;
       const bonus = mode === 'challenge' ? Math.max(0, Math.floor((10000 - timeMs) / 1000)) : 0;

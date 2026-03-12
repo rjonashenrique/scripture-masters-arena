@@ -5,6 +5,8 @@ import { ArrowLeft, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { questions, Question, Category } from '@/data/questions';
 import { recordAnswer, getStats } from '@/lib/gameStore';
 import { useProfile } from '@/hooks/useProfile';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];

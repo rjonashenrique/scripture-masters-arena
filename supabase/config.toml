@@ -1,1 +1,4 @@
 project_id = "lzjgwtvzizhqhoxwwsmz"
+
+[functions.generate-weekly-challenges]
+verify_jwt = false

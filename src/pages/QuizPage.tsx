@@ -5,6 +5,8 @@ import { ArrowLeft, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { questions, Question, Category } from '@/data/questions';
 import { recordAnswer, getStats } from '@/lib/gameStore';
 import { useProfile } from '@/hooks/useProfile';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -21,6 +23,21 @@ export default function QuizPage() {
   const mode = searchParams.get('mode') || 'classic';
   const categoryFilter = searchParams.get('category') as Category | null;
   const { syncStats } = useProfile();
+  const { user } = useAuth();
+  const [churchId, setChurchId] = useState<string | null>(null);
+
+  // Get user's church for challenge contributions
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('church_members')
+      .select('church_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setChurchId(data.church_id);
+      });
+  }, [user]);
 
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -77,6 +94,25 @@ export default function QuizPage() {
     setShowResult(true);
 
     const stats = recordAnswer(correct, q.difficulty, timeMs);
+
+    // Contribute to church challenges
+    if (churchId) {
+      supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'questions_answered', p_amount: 1 });
+      if (correct) {
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'correct_answers', p_amount: 1 });
+        if (q.difficulty === 'hard') {
+          supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'hard_correct', p_amount: 1 });
+        }
+        const pts = q.difficulty === 'easy' ? 10 : q.difficulty === 'medium' ? 20 : 40;
+        const bonus = mode === 'challenge' ? Math.max(0, Math.floor((10000 - timeMs) / 1000)) : 0;
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'points_earned', p_amount: pts + bonus });
+        if (timeMs < 5000) {
+          supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'fast_answers', p_amount: 1 });
+        }
+        supabase.rpc('contribute_challenge_progress', { p_church_id: churchId, p_challenge_type: 'streak_total', p_amount: 1 });
+      }
+    }
+
     if (correct) {
       const pts = q.difficulty === 'easy' ? 10 : q.difficulty === 'medium' ? 20 : 40;
       const bonus = mode === 'challenge' ? Math.max(0, Math.floor((10000 - timeMs) / 1000)) : 0;

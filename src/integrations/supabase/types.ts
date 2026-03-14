@@ -113,6 +113,7 @@ export type Database = {
           id: string
           joined_at: string
           points_contributed: number
+          role: string
           user_id: string
         }
         Insert: {
@@ -120,6 +121,7 @@ export type Database = {
           id?: string
           joined_at?: string
           points_contributed?: number
+          role?: string
           user_id: string
         }
         Update: {
@@ -127,6 +129,7 @@ export type Database = {
           id?: string
           joined_at?: string
           points_contributed?: number
+          role?: string
           user_id?: string
         }
         Relationships: [
@@ -141,10 +144,14 @@ export type Database = {
       }
       churches: {
         Row: {
+          avatar_url: string | null
           code: string
           created_at: string
           denomination: string
+          description: string
           id: string
+          league_tier: string
+          max_members: number
           member_count: number
           name: string
           owner_id: string
@@ -152,10 +159,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           code: string
           created_at?: string
           denomination?: string
+          description?: string
           id?: string
+          league_tier?: string
+          max_members?: number
           member_count?: number
           name: string
           owner_id: string
@@ -163,10 +174,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           code?: string
           created_at?: string
           denomination?: string
+          description?: string
           id?: string
+          league_tier?: string
+          max_members?: number
           member_count?: number
           name?: string
           owner_id?: string
@@ -174,6 +189,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      clan_join_requests: {
+        Row: {
+          church_id: string
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          church_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          church_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_join_requests_church_id_fkey"
+            columns: ["church_id"]
+            isOneToOne: false
+            referencedRelation: "churches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -294,6 +341,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_join_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       contribute_challenge_progress: {
         Args: {
           p_amount?: number
@@ -302,6 +353,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      delete_clan: { Args: { p_church_id: string }; Returns: undefined }
       get_church_stats: {
         Args: { p_church_id: string }
         Returns: {
@@ -309,6 +361,23 @@ export type Database = {
           member_count: number
           total_points: number
         }[]
+      }
+      get_league_tier: { Args: { p_points: number }; Returns: string }
+      kick_clan_member: {
+        Args: { p_church_id: string; p_target_user_id: string }
+        Returns: undefined
+      }
+      reject_join_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
+      set_member_role: {
+        Args: { p_church_id: string; p_role: string; p_target_user_id: string }
+        Returns: undefined
+      }
+      transfer_clan_leadership: {
+        Args: { p_church_id: string; p_new_leader_id: string }
+        Returns: undefined
       }
     }
     Enums: {

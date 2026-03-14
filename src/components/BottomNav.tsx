@@ -6,7 +6,7 @@ const tabs = [
   { path: '/', icon: BookOpen, label: 'Início' },
   { path: '/battle', icon: Swords, label: 'Batalha' },
   { path: '/ranking', icon: Trophy, label: 'Ranking' },
-  { path: '/league', icon: Church, label: 'Liga' },
+  { path: '/league', icon: Church, label: 'Clã' },
   { path: '/profile', icon: User, label: 'Perfil' },
 ];
 

@@ -1,4 +1,7 @@
-import { corsHeaders } from '@supabase/supabase-js/cors'
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 const BIBLE_API = 'https://bible-api.com';
 const AI_GATEWAY = 'https://ai.gateway.lovable.dev/v1/chat/completions';

@@ -54,6 +54,8 @@ function AppRoutes() {
         <Route path="/battle-royale" element={<BattleRoyaleLobbyPage />} />
         <Route path="/battle-royale/:id" element={<BattleRoyaleGamePage />} />
         <Route path="/ranking" element={<RankingPage />} />
+        <Route path="/bible" element={<BibleReaderPage />} />
+        <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
         <Route path="/journey" element={<JourneyPage />} />

@@ -16,6 +16,7 @@ export interface Question {
   explanation: string;
   difficulty: Difficulty;
   category: Category;
+  reference?: string; // e.g. "Gênesis 6:14"
 }
 
 export const questions: Question[] = [

@@ -247,9 +247,14 @@ export default function QuizPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-4 glass-card p-4"
               >
-                <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                   📖 {q.explanation}
                 </p>
+                {q.reference && (
+                  <p className="text-[10px] text-secondary font-semibold mt-2">
+                    📜 {q.reference}
+                  </p>
+                )}
               </motion.div>
             )}
           </motion.div>

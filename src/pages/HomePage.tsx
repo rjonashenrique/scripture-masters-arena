@@ -98,6 +98,38 @@ export default function HomePage() {
         </motion.div>
       </div>
 
+      {/* Daily Verse */}
+      <div className="px-5 mb-4">
+        <DailyVerseCard />
+      </div>
+
+      {/* Bible & Devotional */}
+      <div className="px-5 grid grid-cols-2 gap-3 mb-4">
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate('/bible')}
+          className="glass-card p-4 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+            <Book size={20} className="text-primary-foreground" />
+          </div>
+          <p className="text-xs font-bold text-foreground">Ler Bíblia</p>
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          onClick={() => navigate('/devotional')}
+          className="glass-card p-4 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
+            <Heart size={20} className="text-secondary-foreground" />
+          </div>
+          <p className="text-xs font-bold text-foreground">Devocional</p>
+        </motion.button>
+      </div>
+
       {/* Game modes */}
       <div className="px-5 space-y-4">
         <h2 className="text-lg font-bold font-display text-foreground">Modos de Jogo</h2>

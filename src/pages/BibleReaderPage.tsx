@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { bibleBooks } from '@/lib/bibleBooks';
 import { useBibleChapter } from '@/hooks/useBible';
 
@@ -9,9 +9,17 @@ type View = 'books' | 'chapters' | 'reading';
 
 export default function BibleReaderPage() {
   const navigate = useNavigate();
-  const [view, setView] = useState<View>('books');
-  const [selectedBook, setSelectedBook] = useState(bibleBooks[0]);
-  const [selectedChapter, setSelectedChapter] = useState(1);
+  const [searchParams] = useSearchParams();
+  const bookParam = searchParams.get('book');
+  const chapterParam = searchParams.get('chapter');
+
+  const initialBook = bookParam ? bibleBooks.find(b => b.name === bookParam) || bibleBooks[0] : bibleBooks[0];
+  const initialChapter = chapterParam ? parseInt(chapterParam, 10) : 1;
+  const initialView: View = bookParam ? 'reading' : 'books';
+
+  const [view, setView] = useState<View>(initialView);
+  const [selectedBook, setSelectedBook] = useState(initialBook);
+  const [selectedChapter, setSelectedChapter] = useState(initialChapter);
   const [testament, setTestament] = useState<'old' | 'new'>('old');
   const [search, setSearch] = useState('');
 

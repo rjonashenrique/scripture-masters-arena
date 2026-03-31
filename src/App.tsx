@@ -15,6 +15,8 @@ import BattleGamePage from "@/pages/BattleGamePage";
 import BattleRoyaleLobbyPage from "@/pages/BattleRoyaleLobbyPage";
 import BattleRoyaleGamePage from "@/pages/BattleRoyaleGamePage";
 import RankingPage from "@/pages/RankingPage";
+import BibleReaderPage from "@/pages/BibleReaderPage";
+import DevotionalPage from "@/pages/DevotionalPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import { useAuth } from "@/contexts/AuthContext";

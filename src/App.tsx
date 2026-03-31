@@ -15,6 +15,8 @@ import BattleGamePage from "@/pages/BattleGamePage";
 import BattleRoyaleLobbyPage from "@/pages/BattleRoyaleLobbyPage";
 import BattleRoyaleGamePage from "@/pages/BattleRoyaleGamePage";
 import RankingPage from "@/pages/RankingPage";
+import BibleReaderPage from "@/pages/BibleReaderPage";
+import DevotionalPage from "@/pages/DevotionalPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,6 +54,8 @@ function AppRoutes() {
         <Route path="/battle-royale" element={<BattleRoyaleLobbyPage />} />
         <Route path="/battle-royale/:id" element={<BattleRoyaleGamePage />} />
         <Route path="/ranking" element={<RankingPage />} />
+        <Route path="/bible" element={<BibleReaderPage />} />
+        <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
         <Route path="/journey" element={<JourneyPage />} />

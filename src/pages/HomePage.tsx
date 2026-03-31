@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
@@ -34,6 +34,13 @@ export default function HomePage() {
       icon: Swords,
       gradient: 'bg-gradient-primary',
       path: '/battle',
+    },
+    {
+      title: 'Battle Royale',
+      desc: 'Errou? Eliminado! 10 ou 30 jogadores',
+      icon: Skull,
+      gradient: 'bg-gradient-to-br from-destructive to-destructive/60',
+      path: '/battle-royale',
     },
   ];
 

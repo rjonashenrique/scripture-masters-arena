@@ -12,6 +12,8 @@ import JourneyPage from "@/pages/JourneyPage";
 import ChallengePage from "@/pages/ChallengePage";
 import BattleLobbyPage from "@/pages/BattleLobbyPage";
 import BattleGamePage from "@/pages/BattleGamePage";
+import BattleRoyaleLobbyPage from "@/pages/BattleRoyaleLobbyPage";
+import BattleRoyaleGamePage from "@/pages/BattleRoyaleGamePage";
 import RankingPage from "@/pages/RankingPage";
 import LeaguePage from "@/pages/LeaguePage";
 import AuthPage from "@/pages/AuthPage";
@@ -48,6 +50,8 @@ function AppRoutes() {
         <Route path="/challenge" element={<ChallengePage />} />
         <Route path="/battle" element={<BattleLobbyPage />} />
         <Route path="/battle/:id" element={<BattleGamePage />} />
+        <Route path="/battle-royale" element={<BattleRoyaleLobbyPage />} />
+        <Route path="/battle-royale/:id" element={<BattleRoyaleGamePage />} />
         <Route path="/ranking" element={<RankingPage />} />
         <Route path="/league" element={<LeaguePage />} />
         <Route path="/profile" element={<ProfilePage />} />

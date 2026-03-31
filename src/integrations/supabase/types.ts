@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      battle_royale_players: {
+        Row: {
+          alive: boolean
+          answers: Json
+          display_name: string
+          eliminated_at_question: number | null
+          id: string
+          joined_at: string
+          room_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          alive?: boolean
+          answers?: Json
+          display_name?: string
+          eliminated_at_question?: number | null
+          id?: string
+          joined_at?: string
+          room_id: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          alive?: boolean
+          answers?: Json
+          display_name?: string
+          eliminated_at_question?: number | null
+          id?: string
+          joined_at?: string
+          room_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "battle_royale_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "battle_royale_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      battle_royale_rooms: {
+        Row: {
+          code: string
+          created_at: string
+          current_question: number
+          host_id: string
+          id: string
+          max_players: number
+          question_ids: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          current_question?: number
+          host_id: string
+          id?: string
+          max_players?: number
+          question_ids?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          current_question?: number
+          host_id?: string
+          id?: string
+          max_players?: number
+          question_ids?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       battles: {
         Row: {
           code: string
@@ -345,6 +425,7 @@ export type Database = {
         Args: { p_request_id: string }
         Returns: undefined
       }
+      advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       contribute_challenge_progress: {
         Args: {
           p_amount?: number
@@ -373,6 +454,11 @@ export type Database = {
       }
       set_member_role: {
         Args: { p_church_id: string; p_role: string; p_target_user_id: string }
+        Returns: undefined
+      }
+      start_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
+      submit_battle_royale_answer: {
+        Args: { p_answer: number; p_correct: boolean; p_room_id: string }
         Returns: undefined
       }
       transfer_clan_leadership: {

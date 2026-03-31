@@ -35,6 +35,13 @@ export default function HomePage() {
       gradient: 'bg-gradient-primary',
       path: '/battle',
     },
+    {
+      title: 'Battle Royale',
+      desc: 'Errou? Eliminado! 10 ou 30 jogadores',
+      icon: Skull,
+      gradient: 'bg-gradient-to-br from-destructive to-destructive/60',
+      path: '/battle-royale',
+    },
   ];
 
   return (

@@ -251,9 +251,18 @@ export default function QuizPage() {
                   📖 {q.explanation}
                 </p>
                 {q.reference && (
-                  <p className="text-[10px] text-secondary font-semibold mt-2">
-                    📜 {q.reference}
-                  </p>
+                  <button
+                    onClick={() => {
+                      const ref = q.reference!;
+                      const match = ref.match(/^(.+?)\s+(\d+)/);
+                      if (match) {
+                        navigate(`/bible?book=${encodeURIComponent(match[1])}&chapter=${match[2]}`);
+                      }
+                    }}
+                    className="text-[10px] text-secondary font-semibold mt-2 hover:underline flex items-center gap-1"
+                  >
+                    📜 {q.reference} →
+                  </button>
                 )}
               </motion.div>
             )}

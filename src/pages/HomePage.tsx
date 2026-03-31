@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';

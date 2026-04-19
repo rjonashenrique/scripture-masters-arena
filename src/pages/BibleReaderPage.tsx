@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronLeft, ChevronRight, BookOpen, Search } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -12,18 +12,30 @@ export default function BibleReaderPage() {
   const [searchParams] = useSearchParams();
   const bookParam = searchParams.get('book');
   const chapterParam = searchParams.get('chapter');
+  const verseParam = searchParams.get('verse');
 
   const initialBook = bookParam ? bibleBooks.find(b => b.name === bookParam) || bibleBooks[0] : bibleBooks[0];
   const initialChapter = chapterParam ? parseInt(chapterParam, 10) : 1;
   const initialView: View = bookParam ? 'reading' : 'books';
+  const highlightVerse = verseParam ? parseInt(verseParam, 10) : null;
 
   const [view, setView] = useState<View>(initialView);
   const [selectedBook, setSelectedBook] = useState(initialBook);
   const [selectedChapter, setSelectedChapter] = useState(initialChapter);
   const [testament, setTestament] = useState<'old' | 'new'>('old');
   const [search, setSearch] = useState('');
+  const verseRefs = useRef<Record<number, HTMLParagraphElement | null>>({});
 
   const { data, isLoading } = useBibleChapter(selectedBook.name, view === 'reading' ? selectedChapter : 0);
+
+  useEffect(() => {
+    if (!isLoading && highlightVerse && data?.verses && view === 'reading') {
+      const el = verseRefs.current[highlightVerse];
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+      }
+    }
+  }, [isLoading, data, highlightVerse, view, selectedChapter]);
 
   const filteredBooks = bibleBooks
     .filter(b => b.testament === testament)

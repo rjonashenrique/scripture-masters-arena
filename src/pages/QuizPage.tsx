@@ -254,9 +254,10 @@ export default function QuizPage() {
                   <button
                     onClick={() => {
                       const ref = q.reference!;
-                      const match = ref.match(/^(.+?)\s+(\d+)/);
+                      const match = ref.match(/^(.+?)\s+(\d+)(?::(\d+))?/);
                       if (match) {
-                        navigate(`/bible?book=${encodeURIComponent(match[1])}&chapter=${match[2]}`);
+                        const verseParam = match[3] ? `&verse=${match[3]}` : '';
+                        navigate(`/bible?book=${encodeURIComponent(match[1])}&chapter=${match[2]}${verseParam}`);
                       }
                     }}
                     className="text-[10px] text-secondary font-semibold mt-2 hover:underline flex items-center gap-1"

@@ -162,12 +162,23 @@ export default function BibleReaderPage() {
               ) : (
                 <>
                   <div className="glass-card p-5 mb-4">
-                    {data?.verses?.map((v: { verse: number; text: string }) => (
-                      <p key={v.verse} className="text-sm leading-7 text-foreground mb-1">
-                        <sup className="text-[10px] font-bold text-secondary mr-1">{v.verse}</sup>
-                        {v.text.trim()}
-                      </p>
-                    )) || (
+                    {data?.verses?.map((v: { verse: number; text: string }) => {
+                      const isHighlighted = highlightVerse === v.verse;
+                      return (
+                        <p
+                          key={v.verse}
+                          ref={el => { verseRefs.current[v.verse] = el; }}
+                          className={`text-sm leading-7 mb-1 transition-colors rounded-lg ${
+                            isHighlighted
+                              ? 'bg-secondary/20 text-foreground px-2 py-1 ring-2 ring-secondary/50'
+                              : 'text-foreground'
+                          }`}
+                        >
+                          <sup className="text-[10px] font-bold text-secondary mr-1">{v.verse}</sup>
+                          {v.text.trim()}
+                        </p>
+                      );
+                    }) || (
                       <p className="text-sm text-foreground leading-7 whitespace-pre-wrap">{data?.text}</p>
                     )}
                   </div>

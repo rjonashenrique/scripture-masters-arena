@@ -142,6 +142,80 @@ export type Database = {
         }
         Relationships: []
       }
+      championship_scores: {
+        Row: {
+          championship_id: string
+          correct_answers: number
+          display_name: string
+          id: string
+          points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          championship_id: string
+          correct_answers?: number
+          display_name?: string
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          championship_id?: string
+          correct_answers?: number
+          display_name?: string
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "championship_scores_championship_id_fkey"
+            columns: ["championship_id"]
+            isOneToOne: false
+            referencedRelation: "championships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      championships: {
+        Row: {
+          created_at: string
+          description: string
+          end_date: string
+          id: string
+          name: string
+          prize_coins_1st: number
+          prize_coins_2nd: number
+          prize_coins_3rd: number
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          end_date: string
+          id?: string
+          name: string
+          prize_coins_1st?: number
+          prize_coins_2nd?: number
+          prize_coins_3rd?: number
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          end_date?: string
+          id?: string
+          name?: string
+          prize_coins_1st?: number
+          prize_coins_2nd?: number
+          prize_coins_3rd?: number
+          start_date?: string
+        }
+        Relationships: []
+      }
       church_challenge_progress: {
         Row: {
           challenge_id: string
@@ -423,6 +497,10 @@ export type Database = {
     Functions: {
       accept_join_request: {
         Args: { p_request_id: string }
+        Returns: undefined
+      }
+      add_championship_points: {
+        Args: { p_correct: number; p_display_name: string; p_points: number }
         Returns: undefined
       }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }

@@ -117,7 +117,7 @@ export default function BattleGamePage() {
       updateData.player2_score = newScore;
     }
 
-    await supabase.from('battles').update(updateData).eq('id', id);
+    await supabase.from('battles').update(updateData as any).eq('id', id);
   };
 
   const handleSelect = (optionIndex: number) => {

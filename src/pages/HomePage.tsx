@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
@@ -104,7 +104,7 @@ export default function HomePage() {
       </div>
 
       {/* Bible & Devotional */}
-      <div className="px-5 grid grid-cols-2 gap-3 mb-4">
+      <div className="px-5 grid grid-cols-3 gap-3 mb-4">
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,6 +120,18 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
+          onClick={() => navigate('/reading-plan')}
+          className="glass-card p-4 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+            <Calendar size={20} className="text-primary-foreground" />
+          </div>
+          <p className="text-xs font-bold text-foreground">Plano 1 Ano</p>
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           onClick={() => navigate('/devotional')}
           className="glass-card p-4 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
         >

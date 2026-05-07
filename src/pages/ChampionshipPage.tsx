@@ -47,7 +47,18 @@ export default function ChampionshipPage() {
   const [loading, setLoading] = useState(true);
   const countdown = useCountdown(champ?.end_date);
 
+  const refreshScores = async (champId: string) => {
+    const { data: s } = await supabase
+      .from('championship_scores')
+      .select('user_id, display_name, points, correct_answers')
+      .eq('championship_id', champId)
+      .order('points', { ascending: false })
+      .limit(50);
+    setScores(s || []);
+  };
+
   useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
       const { data: c } = await supabase
         .from('championships')
@@ -59,16 +70,22 @@ export default function ChampionshipPage() {
         .maybeSingle();
       if (c) {
         setChamp(c);
-        const { data: s } = await supabase
-          .from('championship_scores')
-          .select('user_id, display_name, points, correct_answers')
-          .eq('championship_id', c.id)
-          .order('points', { ascending: false })
-          .limit(50);
-        setScores(s || []);
+        await refreshScores(c.id);
+        // Realtime subscription while championship is active
+        channel = supabase
+          .channel(`champ-${c.id}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'championship_scores', filter: `championship_id=eq.${c.id}` },
+            () => refreshScores(c.id)
+          )
+          .subscribe();
       }
       setLoading(false);
     })();
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, []);
 
   const myRank = user ? scores.findIndex((s) => s.user_id === user.id) : -1;

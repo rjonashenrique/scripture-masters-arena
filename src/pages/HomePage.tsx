@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, Award } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
@@ -101,25 +101,6 @@ export default function HomePage() {
       {/* Daily Verse */}
       <div className="px-5 mb-4">
         <DailyVerseCard />
-      </div>
-
-      {/* Championship Banner */}
-      <div className="px-5 mb-4">
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          onClick={() => navigate('/championship')}
-          className="w-full glass-card p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform border border-secondary/30"
-        >
-          <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center shadow-lg">
-            <Award size={24} className="text-secondary-foreground" />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold font-display text-foreground">Campeonato Semanal 🏆</p>
-            <p className="text-xs text-muted-foreground">Dispute o pódio e ganhe moedas!</p>
-          </div>
-          <span className="text-secondary font-bold">›</span>
-        </motion.button>
       </div>
 
       {/* Bible & Devotional */}

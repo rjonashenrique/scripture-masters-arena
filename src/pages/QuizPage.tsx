@@ -95,6 +95,15 @@ export default function QuizPage() {
       setFinished(true);
       // Sync stats to database
       syncStats(getStats());
+      // Add points to active championship
+      if (user) {
+        const displayName = user.user_metadata?.display_name || 'Jogador';
+        supabase.rpc('add_championship_points', {
+          p_points: score,
+          p_correct: correctCount,
+          p_display_name: displayName,
+        });
+      }
     } else {
       setCurrentIndex((i) => i + 1);
       setSelected(null);

@@ -60,14 +60,16 @@ export default function ChampionshipPage() {
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      const { data: c } = await supabase
+      const nowIso = new Date().toISOString();
+      const { data: list, error } = await supabase
         .from('championships')
         .select('*')
-        .lte('start_date', new Date().toISOString())
-        .gte('end_date', new Date().toISOString())
+        .lte('start_date', nowIso)
+        .gte('end_date', nowIso)
         .order('start_date', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
+      if (error) console.error('championship load error', error);
+      const c = list && list[0];
       if (c) {
         setChamp(c);
         await refreshScores(c.id);

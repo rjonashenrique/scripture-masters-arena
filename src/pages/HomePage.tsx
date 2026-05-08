@@ -179,23 +179,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Championship banner */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          onClick={() => navigate('/championship')}
-          className="w-full glass-card p-4 flex items-center gap-3 active:scale-[0.98] transition-transform"
-        >
-          <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center shadow-lg">
-            <Trophy size={24} className="text-secondary-foreground" />
-          </div>
-          <div className="flex-1 text-left">
-            <p className="font-bold font-display text-foreground">Campeonato Semanal</p>
-            <p className="text-xs text-muted-foreground">Compita pelos prêmios em moedas!</p>
-          </div>
-          <span className="text-muted-foreground">›</span>
-        </motion.button>
-
         {/* Categories */}
         <h2 className="text-lg font-bold font-display text-foreground pt-4">Categorias</h2>
         <div className="grid grid-cols-2 gap-3 pb-4">

@@ -108,9 +108,14 @@ export default function BattleGamePage() {
     const newScore = myScore + points;
     setMyScore(newScore);
 
-    const updateData = playerNum === 1
-      ? { player1_answers: newAnswers, player1_score: newScore }
-      : { player2_answers: newAnswers, player2_score: newScore };
+    const updateData: Record<string, any> = {};
+    if (playerNum === 1) {
+      updateData.player1_answers = newAnswers;
+      updateData.player1_score = newScore;
+    } else {
+      updateData.player2_answers = newAnswers;
+      updateData.player2_score = newScore;
+    }
 
     await supabase.from('battles').update(updateData).eq('id', id);
   };

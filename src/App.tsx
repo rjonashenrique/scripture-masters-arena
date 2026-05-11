@@ -8,7 +8,7 @@ import HomePage from "@/pages/HomePage";
 import QuizPage from "@/pages/QuizPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AchievementsPage from "@/pages/AchievementsPage";
-import JourneyPage from "@/pages/JourneyPage";
+
 import ChallengePage from "@/pages/ChallengePage";
 import BattleLobbyPage from "@/pages/BattleLobbyPage";
 import BattleGamePage from "@/pages/BattleGamePage";

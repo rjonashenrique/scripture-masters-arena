@@ -8,7 +8,7 @@ import HomePage from "@/pages/HomePage";
 import QuizPage from "@/pages/QuizPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AchievementsPage from "@/pages/AchievementsPage";
-import JourneyPage from "@/pages/JourneyPage";
+
 import ChallengePage from "@/pages/ChallengePage";
 import BattleLobbyPage from "@/pages/BattleLobbyPage";
 import BattleGamePage from "@/pages/BattleGamePage";
@@ -60,7 +60,7 @@ function AppRoutes() {
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
-        <Route path="/journey" element={<JourneyPage />} />
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomNav />

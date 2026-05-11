@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, GraduationCap } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
@@ -144,27 +144,6 @@ export default function HomePage() {
 
       {/* Game modes */}
       <div className="px-5 space-y-4">
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          onClick={() => navigate('/journey')}
-          className="w-full relative overflow-hidden rounded-2xl p-5 text-left active:scale-[0.98] transition-transform bg-gradient-primary shadow-glow-blue"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-secondary/20 backdrop-blur flex items-center justify-center shrink-0">
-              <GraduationCap size={28} className="text-secondary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-bold">Trilha de Aprendizado</p>
-              <p className="font-extrabold font-display text-primary-foreground text-lg leading-tight">Aprender a Bíblia</p>
-              <p className="text-xs text-primary-foreground/80 mt-0.5">
-                {stats.completedLessons.length}/7 lições completadas
-              </p>
-            </div>
-            <span className="text-primary-foreground text-2xl">›</span>
-          </div>
-        </motion.button>
-
         <h2 className="text-lg font-bold font-display text-foreground">Modos de Jogo</h2>
         {modes.map((mode, i) => (
           <motion.button

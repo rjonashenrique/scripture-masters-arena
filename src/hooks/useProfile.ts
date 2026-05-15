@@ -23,6 +23,8 @@ export interface Profile {
   coins: number;
   achievements: string[];
   completed_lessons: number[];
+  titles?: string[];
+  active_title?: string;
 }
 
 function statsToProfile(stats: PlayerStats): Partial<Profile> {

@@ -379,6 +379,7 @@ export type Database = {
       profiles: {
         Row: {
           achievements: Json
+          active_title: string
           avatar_url: string | null
           best_streak: number
           coins: number
@@ -395,6 +396,7 @@ export type Database = {
           medium_answered: number
           medium_correct: number
           streak_days: number
+          titles: Json
           total_answered: number
           total_correct: number
           total_points: number
@@ -403,6 +405,7 @@ export type Database = {
         }
         Insert: {
           achievements?: Json
+          active_title?: string
           avatar_url?: string | null
           best_streak?: number
           coins?: number
@@ -419,6 +422,7 @@ export type Database = {
           medium_answered?: number
           medium_correct?: number
           streak_days?: number
+          titles?: Json
           total_answered?: number
           total_correct?: number
           total_points?: number
@@ -427,6 +431,7 @@ export type Database = {
         }
         Update: {
           achievements?: Json
+          active_title?: string
           avatar_url?: string | null
           best_streak?: number
           coins?: number
@@ -443,10 +448,200 @@ export type Database = {
           medium_answered?: number
           medium_correct?: number
           streak_days?: number
+          titles?: Json
           total_answered?: number
           total_correct?: number
           total_points?: number
           total_time_ms?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tournament_matches: {
+        Row: {
+          created_at: string
+          deadline: string | null
+          id: string
+          match_index: number
+          player1_id: string | null
+          player1_name: string | null
+          player1_score: number | null
+          player2_id: string | null
+          player2_name: string | null
+          player2_score: number | null
+          round: number
+          status: string
+          tournament_id: string
+          updated_at: string
+          winner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          match_index: number
+          player1_id?: string | null
+          player1_name?: string | null
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_name?: string | null
+          player2_score?: number | null
+          round: number
+          status?: string
+          tournament_id: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          match_index?: number
+          player1_id?: string | null
+          player1_name?: string | null
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_name?: string | null
+          player2_score?: number | null
+          round?: number
+          status?: string
+          tournament_id?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_matches_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_registrations: {
+        Row: {
+          created_at: string
+          display_name: string
+          eliminated_round: number | null
+          final_place: number | null
+          id: string
+          seed: number | null
+          tournament_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          eliminated_round?: number | null
+          final_place?: number | null
+          id?: string
+          seed?: number | null
+          tournament_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          eliminated_round?: number | null
+          final_place?: number | null
+          id?: string
+          seed?: number | null
+          tournament_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_registrations_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_rewards: {
+        Row: {
+          coins_awarded: number
+          created_at: string
+          id: string
+          place: number
+          title: string
+          tournament_id: string
+          user_id: string
+        }
+        Insert: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          place: number
+          title?: string
+          tournament_id: string
+          user_id: string
+        }
+        Update: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          place?: number
+          title?: string
+          tournament_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_rewards_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          bracket_size: number
+          created_at: string
+          current_round: number
+          end_date: string
+          id: string
+          question_ids: Json
+          registration_end: string
+          registration_start: string
+          season_number: number
+          start_date: string
+          status: string
+          total_rounds: number
+          updated_at: string
+        }
+        Insert: {
+          bracket_size?: number
+          created_at?: string
+          current_round?: number
+          end_date: string
+          id?: string
+          question_ids?: Json
+          registration_end: string
+          registration_start: string
+          season_number: number
+          start_date: string
+          status?: string
+          total_rounds?: number
+          updated_at?: string
+        }
+        Update: {
+          bracket_size?: number
+          created_at?: string
+          current_round?: number
+          end_date?: string
+          id?: string
+          question_ids?: Json
+          registration_end?: string
+          registration_start?: string
+          season_number?: number
+          start_date?: string
+          status?: string
+          total_rounds?: number
           updated_at?: string
         }
         Relationships: []
@@ -526,10 +721,15 @@ export type Database = {
         Args: { p_church_id: string; p_target_user_id: string }
         Returns: undefined
       }
+      register_tournament: {
+        Args: { p_display_name: string; p_tournament_id: string }
+        Returns: undefined
+      }
       reject_join_request: {
         Args: { p_request_id: string }
         Returns: undefined
       }
+      set_active_title: { Args: { p_title: string }; Returns: undefined }
       set_member_role: {
         Args: { p_church_id: string; p_role: string; p_target_user_id: string }
         Returns: undefined
@@ -537,6 +737,10 @@ export type Database = {
       start_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       submit_battle_royale_answer: {
         Args: { p_answer: number; p_correct: boolean; p_room_id: string }
+        Returns: undefined
+      }
+      submit_tournament_score: {
+        Args: { p_match_id: string; p_score: number }
         Returns: undefined
       }
       transfer_clan_leadership: {

@@ -2,3 +2,6 @@ project_id = "lzjgwtvzizhqhoxwwsmz"
 
 [functions.generate-weekly-challenges]
 verify_jwt = false
+
+[functions.tournament-scheduler]
+verify_jwt = false

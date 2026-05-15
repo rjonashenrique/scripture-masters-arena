@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { getStats, getLevel, ACHIEVEMENTS } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut } from 'lucide-react';
+import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import TitleSelector from '@/components/TitleSelector';
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -45,6 +46,11 @@ export default function ProfilePage() {
             <span className="text-3xl font-extrabold text-secondary-foreground">{level.level}</span>
           </div>
           <h2 className="text-xl font-bold font-display text-gradient-gold">{displayName}</h2>
+          {profile?.active_title && (
+            <p className="text-xs text-secondary font-bold flex items-center gap-1 justify-center mt-1">
+              <Crown size={12} /> {profile.active_title}
+            </p>
+          )}
           <p className="text-xs text-muted-foreground">{user?.email}</p>
           <p className="text-sm text-muted-foreground mt-1">{level.name} • {stats.totalPoints} pontos</p>
           <div className="w-full h-2 rounded-full bg-muted mt-3 overflow-hidden">
@@ -99,6 +105,9 @@ export default function ProfilePage() {
             );
           })}
         </div>
+
+        <h2 className="text-lg font-bold font-display text-foreground mb-3">Títulos</h2>
+        <div className="mb-6"><TitleSelector /></div>
       </div>
     </div>
   );

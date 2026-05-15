@@ -23,6 +23,8 @@ export interface Profile {
   coins: number;
   achievements: string[];
   completed_lessons: number[];
+  titles?: string[];
+  active_title?: string;
 }
 
 function statsToProfile(stats: PlayerStats): Partial<Profile> {
@@ -89,9 +91,11 @@ export function useProfile() {
 
     if (!error && data) {
       const p: Profile = {
-        ...data,
+        ...(data as any),
         achievements: Array.isArray(data.achievements) ? data.achievements as string[] : [],
         completed_lessons: Array.isArray(data.completed_lessons) ? data.completed_lessons as number[] : [],
+        titles: Array.isArray((data as any).titles) ? ((data as any).titles as string[]) : [],
+        active_title: (data as any).active_title || '',
       };
       setProfile(p);
       // Sync to localStorage as well

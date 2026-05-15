@@ -91,7 +91,7 @@ export function useProfile() {
 
     if (!error && data) {
       const p: Profile = {
-        ...data,
+        ...(data as any),
         achievements: Array.isArray(data.achievements) ? data.achievements as string[] : [],
         completed_lessons: Array.isArray(data.completed_lessons) ? data.completed_lessons as number[] : [],
         titles: Array.isArray((data as any).titles) ? ((data as any).titles as string[]) : [],

@@ -62,6 +62,8 @@ function AppRoutes() {
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
+        <Route path="/tournament" element={<TournamentPage />} />
+        <Route path="/tournament/match/:id" element={<TournamentMatchPage />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -142,6 +142,25 @@ export default function HomePage() {
         </motion.button>
       </div>
 
+      {/* Tournament Card */}
+      <div className="px-5 mb-4">
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate('/tournament')}
+          className="w-full glass-card p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform border border-secondary/30"
+        >
+          <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center shadow-glow-gold shrink-0">
+            <Crown size={24} className="text-secondary-foreground" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold font-display text-foreground">Torneio Semanal</p>
+            <p className="text-xs text-muted-foreground">Chave eliminatória • Prêmios em moedas e títulos</p>
+          </div>
+          <span className="text-secondary font-bold">›</span>
+        </motion.button>
+      </div>
+
       {/* Game modes */}
       <div className="px-5 space-y-4">
         <h2 className="text-lg font-bold font-display text-foreground">Modos de Jogo</h2>

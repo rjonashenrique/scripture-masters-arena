@@ -59,6 +59,21 @@ export default function TournamentPage() {
     (myMatch.player2_id === user?.id && myMatch.player2_score != null)
   );
 
+  // Most recent finished match involving the user — used for live result banner
+  const myLastFinished = [...matches]
+    .filter((m) => m.status === 'finished' && (m.player1_id === user?.id || m.player2_id === user?.id))
+    .sort((a, b) => b.round - a.round || b.match_index - a.match_index)[0];
+  const myLastWon = myLastFinished?.winner_id === user?.id;
+  const opponentName = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player2_name : myLastFinished.player1_name)
+    : '';
+  const myLastScore = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player1_score : myLastFinished.player2_score)
+    : null;
+  const oppLastScore = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player2_score : myLastFinished.player1_score)
+    : null;
+
   const rounds: Record<number, TournamentMatch[]> = {};
   matches.forEach((m) => {
     rounds[m.round] = rounds[m.round] || [];
@@ -129,8 +144,41 @@ export default function TournamentPage() {
         {tournament.status === 'active' && myMatch && myAlreadyPlayed && (
           <div className="glass-card p-4 text-center">
             <p className="font-bold text-foreground">Sua partida foi enviada</p>
-            <p className="text-xs text-muted-foreground">Aguardando adversário ou fim da rodada.</p>
+            <p className="text-xs text-muted-foreground">
+              {myMatch.player1_score != null && myMatch.player2_score != null
+                ? 'Apurando resultado…'
+                : 'Aguardando adversário em tempo real…'}
+            </p>
+            <div className="mt-2 flex items-center justify-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] text-muted-foreground">ao vivo</span>
+            </div>
           </div>
+        )}
+
+        {/* Live result banner for the user's most recent finished match */}
+        {myLastFinished && (
+          <motion.div
+            key={myLastFinished.id + ':' + (myLastFinished.winner_id ?? '')}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`glass-card p-4 border ${myLastWon ? 'border-secondary' : 'border-destructive/50'}`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">{roundName(myLastFinished.round, tournament.total_rounds)}</p>
+                <p className={`font-extrabold ${myLastWon ? 'text-secondary' : 'text-destructive'}`}>
+                  {myLastWon ? '🏆 Vitória!' : '❌ Derrota'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">vs {opponentName || '—'}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-extrabold text-foreground">
+                  {myLastScore ?? '–'} <span className="text-muted-foreground">x</span> {oppLastScore ?? '–'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* Bracket */}

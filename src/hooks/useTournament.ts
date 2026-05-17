@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface Tournament {
   id: string;
@@ -89,16 +90,40 @@ export function useTournament() {
     fetchAll();
   }, [fetchAll]);
 
-  // Realtime
+  // Realtime: subscribe as soon as we know the tournament id, with targeted handlers
+  const matchesRef = useRef<TournamentMatch[]>([]);
+  useEffect(() => { matchesRef.current = matches; }, [matches]);
+
   useEffect(() => {
     if (!tournament) return;
+    const tid = tournament.id;
     const channel = supabase
-      .channel(`tournament-${tournament.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_matches', filter: `tournament_id=eq.${tournament.id}` }, () => fetchAll())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tournaments', filter: `id=eq.${tournament.id}` }, () => fetchAll())
+      .channel(`tournament-${tid}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tournament_matches', filter: `tournament_id=eq.${tid}` }, (payload) => {
+        const updated = payload.new as TournamentMatch;
+        const prev = matchesRef.current.find((m) => m.id === updated.id);
+        setMatches((prevList) => prevList.map((m) => (m.id === updated.id ? { ...m, ...updated } : m)));
+        // Notify the current user when their match resolves
+        if (user && updated.status === 'finished' && prev?.status !== 'finished' &&
+            (updated.player1_id === user.id || updated.player2_id === user.id)) {
+          const won = updated.winner_id === user.id;
+          if (won) toast.success('🏆 Você venceu a partida!');
+          else toast.error('Você foi eliminado da partida.');
+        }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tournament_matches', filter: `tournament_id=eq.${tid}` }, (payload) => {
+        const inserted = payload.new as TournamentMatch;
+        setMatches((prev) => (prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted].sort((a, b) => a.round - b.round || a.match_index - b.match_index)));
+        if (user && (inserted.player1_id === user.id || inserted.player2_id === user.id)) {
+          toast.info('Nova partida disponível no torneio!');
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tournaments', filter: `id=eq.${tid}` }, (payload) => {
+        setTournament((prev) => (prev ? { ...prev, ...(payload.new as Tournament) } : (payload.new as Tournament)));
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [tournament?.id, fetchAll]);
+  }, [tournament?.id, user?.id]);
 
   return { tournament, matches, registered, loading, refresh: fetchAll };
 }

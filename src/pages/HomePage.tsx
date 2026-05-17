@@ -4,6 +4,7 @@ import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calenda
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
+import { useTournament } from '@/hooks/useTournament';
 import DailyVerseCard from '@/components/DailyVerseCard';
 
 export default function HomePage() {

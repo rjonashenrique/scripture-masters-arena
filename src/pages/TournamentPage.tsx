@@ -59,6 +59,21 @@ export default function TournamentPage() {
     (myMatch.player2_id === user?.id && myMatch.player2_score != null)
   );
 
+  // Most recent finished match involving the user — used for live result banner
+  const myLastFinished = [...matches]
+    .filter((m) => m.status === 'finished' && (m.player1_id === user?.id || m.player2_id === user?.id))
+    .sort((a, b) => b.round - a.round || b.match_index - a.match_index)[0];
+  const myLastWon = myLastFinished?.winner_id === user?.id;
+  const opponentName = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player2_name : myLastFinished.player1_name)
+    : '';
+  const myLastScore = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player1_score : myLastFinished.player2_score)
+    : null;
+  const oppLastScore = myLastFinished
+    ? (myLastFinished.player1_id === user?.id ? myLastFinished.player2_score : myLastFinished.player1_score)
+    : null;
+
   const rounds: Record<number, TournamentMatch[]> = {};
   matches.forEach((m) => {
     rounds[m.round] = rounds[m.round] || [];

@@ -11,9 +11,20 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { tournament, matches } = useTournament();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
   const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
+
+  // Pending match for the current user in the active round
+  const myPendingMatch = tournament && user
+    ? matches.find((m) =>
+        m.status === 'pending' &&
+        m.round === tournament.current_round &&
+        ((m.player1_id === user.id && m.player1_score == null) ||
+         (m.player2_id === user.id && m.player2_score == null))
+      )
+    : undefined;
 
   const modes = [
     {

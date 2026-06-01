@@ -716,6 +716,19 @@ export type Database = {
           total_points: number
         }[]
       }
+      get_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          active_title: string
+          avatar_url: string
+          best_streak: number
+          display_name: string
+          id: string
+          total_answered: number
+          total_correct: number
+          total_points: number
+        }[]
+      }
       get_league_tier: { Args: { p_points: number }; Returns: string }
       kick_clan_member: {
         Args: { p_church_id: string; p_target_user_id: string }

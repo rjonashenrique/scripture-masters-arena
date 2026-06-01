@@ -2,8 +2,20 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-scheduler-secret',
 };
+
+// Verify the caller is the trusted scheduler via the backend-only shared secret.
+async function isAuthorizedScheduler(req: Request, supabase: any): Promise<boolean> {
+  const provided = req.headers.get('x-scheduler-secret');
+  if (!provided) return false;
+  const { data } = await supabase
+    .from('app_config')
+    .select('value')
+    .eq('key', 'scheduler_secret')
+    .maybeSingle();
+  return !!data?.value && data.value === provided;
+}
 
 const CHALLENGE_TEMPLATES = [
   { title: 'Maratona Bíblica', description: 'Respondam {target} perguntas coletivamente', icon: '📖', challenge_type: 'questions_answered', target_value: 200, reward_coins: 100 },

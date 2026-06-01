@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import TitleSelector from '@/components/TitleSelector';
+
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();

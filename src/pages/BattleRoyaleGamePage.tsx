@@ -100,15 +100,15 @@ export default function BattleRoyaleGamePage() {
     if (showResult || eliminated) return;
     setSelected(-1);
     setShowResult(true);
-    submitAnswer(-1, false);
+    submitAnswer(-1);
   }, [showResult, eliminated, myQuestion]);
 
-  const submitAnswer = async (answerIndex: number, correct: boolean) => {
+  // The server verifies the answer against the stored correct answer.
+  const submitAnswer = async (answerIndex: number) => {
     if (!room || !id) return;
     await supabase.rpc('submit_battle_royale_answer', {
       p_room_id: id,
       p_answer: answerIndex,
-      p_correct: correct,
     });
   };
 
@@ -119,7 +119,7 @@ export default function BattleRoyaleGamePage() {
     const correct = optionIndex === q.correct;
     setSelected(optionIndex);
     setShowResult(true);
-    submitAnswer(optionIndex, correct);
+    submitAnswer(optionIndex);
     if (!correct) setEliminated(true);
   };
 

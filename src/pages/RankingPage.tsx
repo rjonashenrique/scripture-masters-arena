@@ -20,12 +20,8 @@ export default function RankingPage() {
 
   useEffect(() => {
     async function fetchRanking() {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, display_name, total_points, total_correct, total_answered, best_streak')
-        .order('total_points', { ascending: false })
-        .limit(50);
-      if (data) setPlayers(data);
+      const { data } = await supabase.rpc('get_leaderboard', { p_limit: 50 });
+      if (data) setPlayers(data as RankPlayer[]);
       setLoading(false);
     }
     fetchRanking();

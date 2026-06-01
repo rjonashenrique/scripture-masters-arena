@@ -18,8 +18,6 @@ import RankingPage from "@/pages/RankingPage";
 import BibleReaderPage from "@/pages/BibleReaderPage";
 import DevotionalPage from "@/pages/DevotionalPage";
 import ReadingPlanPage from "@/pages/ReadingPlanPage";
-import TournamentPage from "@/pages/TournamentPage";
-import TournamentMatchPage from "@/pages/TournamentMatchPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import { useAuth } from "@/contexts/AuthContext";
@@ -62,8 +60,7 @@ function AppRoutes() {
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
-        <Route path="/tournament" element={<TournamentPage />} />
-        <Route path="/tournament/match/:id" element={<TournamentMatchPage />} />
+        
         
         <Route path="*" element={<NotFound />} />
       </Routes>

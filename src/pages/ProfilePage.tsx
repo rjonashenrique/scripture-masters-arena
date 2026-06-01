@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import TitleSelector from '@/components/TitleSelector';
+
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -105,9 +105,6 @@ export default function ProfilePage() {
             );
           })}
         </div>
-
-        <h2 className="text-lg font-bold font-display text-foreground mb-3">Títulos</h2>
-        <div className="mb-6"><TitleSelector /></div>
       </div>
     </div>
   );

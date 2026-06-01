@@ -15,7 +15,7 @@ export default function BottomNav() {
   const location = useLocation();
 
   // Hide nav during quiz
-  if (location.pathname === '/quiz' || location.pathname.startsWith('/battle/') || location.pathname.startsWith('/tournament/match') || location.pathname === '/devotional') return null;
+  if (location.pathname === '/quiz' || location.pathname.startsWith('/battle/') || location.pathname === '/devotional') return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">

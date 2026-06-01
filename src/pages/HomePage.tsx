@@ -4,27 +4,15 @@ import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calenda
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { useTournament } from '@/hooks/useTournament';
 import DailyVerseCard from '@/components/DailyVerseCard';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { tournament, matches } = useTournament();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
   const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
-
-  // Pending match for the current user in the active round
-  const myPendingMatch = tournament && user
-    ? matches.find((m) =>
-        m.status === 'pending' &&
-        m.round === tournament.current_round &&
-        ((m.player1_id === user.id && m.player1_score == null) ||
-         (m.player2_id === user.id && m.player2_score == null))
-      )
-    : undefined;
 
   const modes = [
     {
@@ -159,26 +147,15 @@ export default function HomePage() {
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => navigate(myPendingMatch ? `/tournament/match/${myPendingMatch.id}` : '/tournament')}
-          className={`w-full glass-card p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform border ${myPendingMatch ? 'border-secondary shadow-glow-gold' : 'border-secondary/30'}`}
+          onClick={() => navigate('/tournament')}
+          className="w-full glass-card p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform border border-secondary/30"
         >
           <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center shadow-glow-gold shrink-0">
             <Crown size={24} className="text-secondary-foreground" />
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="font-bold font-display text-foreground">Torneio Semanal</p>
-              {myPendingMatch && (
-                <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" /> Ao vivo
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground truncate">
-              {myPendingMatch
-                ? `Sua partida está esperando — jogar agora!`
-                : 'Chave eliminatória • Prêmios em moedas e títulos'}
-            </p>
+          <div className="flex-1">
+            <p className="font-bold font-display text-foreground">Torneio Semanal</p>
+            <p className="text-xs text-muted-foreground">Chave eliminatória • Prêmios em moedas e títulos</p>
           </div>
           <span className="text-secondary font-bold">›</span>
         </motion.button>

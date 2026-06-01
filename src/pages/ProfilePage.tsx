@@ -105,9 +105,6 @@ export default function ProfilePage() {
             );
           })}
         </div>
-
-        <h2 className="text-lg font-bold font-display text-foreground mb-3">Títulos</h2>
-        <div className="mb-6"><TitleSelector /></div>
       </div>
     </div>
   );

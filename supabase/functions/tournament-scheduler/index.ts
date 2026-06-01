@@ -2,8 +2,21 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-scheduler-secret',
 };
+
+// Verify the caller is the trusted scheduler by comparing the shared secret
+// (stored backend-only in public.app_config) against the request header.
+async function isAuthorizedScheduler(req: Request): Promise<boolean> {
+  const provided = req.headers.get('x-scheduler-secret');
+  if (!provided) return false;
+  const { data } = await supabase
+    .from('app_config')
+    .select('value')
+    .eq('key', 'scheduler_secret')
+    .maybeSingle();
+  return !!data?.value && data.value === provided;
+}
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -253,6 +266,11 @@ async function finalizeTournament(t: any, finalMatches: any[]) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (!(await isAuthorizedScheduler(req))) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   try {
     const t = await ensureCurrentTournament();
     const now = new Date();

@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_config: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
       battle_royale_players: {
         Row: {
           alive: boolean
@@ -457,6 +472,21 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_questions: {
+        Row: {
+          correct_answer: number
+          id: number
+        }
+        Insert: {
+          correct_answer: number
+          id: number
+        }
+        Update: {
+          correct_answer?: number
+          id?: number
+        }
+        Relationships: []
+      }
       tournament_matches: {
         Row: {
           created_at: string
@@ -749,7 +779,7 @@ export type Database = {
       }
       start_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       submit_battle_royale_answer: {
-        Args: { p_answer: number; p_correct: boolean; p_room_id: string }
+        Args: { p_answer: number; p_room_id: string }
         Returns: undefined
       }
       submit_tournament_score: {

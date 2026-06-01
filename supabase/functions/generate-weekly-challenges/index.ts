@@ -36,6 +36,12 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    if (!(await isAuthorizedScheduler(req, supabase))) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Get current week boundaries (Monday to Sunday)
     const now = new Date();
     const dayOfWeek = now.getUTCDay();

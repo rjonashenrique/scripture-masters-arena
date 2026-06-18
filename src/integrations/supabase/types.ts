@@ -773,6 +773,7 @@ export type Database = {
         Args: { p_correct: number; p_display_name: string; p_points: number }
         Returns: undefined
       }
+      admin_exists: { Args: never; Returns: boolean }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
       contribute_challenge_progress: {

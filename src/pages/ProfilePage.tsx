@@ -110,6 +110,12 @@ export default function ProfilePage() {
             );
           })}
         </div>
+
+        {isAdmin && (
+          <Button onClick={() => navigate('/admin')} className="w-full mb-6">
+            <ShieldCheck size={16} /> Painel Admin
+          </Button>
+        )}
       </div>
     </div>
   );

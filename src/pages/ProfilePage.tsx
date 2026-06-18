@@ -1,14 +1,19 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { getStats, getLevel, ACHIEVEMENTS } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown } from 'lucide-react';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const { isAdmin } = useUserRole();
+  const navigate = useNavigate();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
   const accuracy = stats.totalAnswered > 0 ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
@@ -105,6 +110,12 @@ export default function ProfilePage() {
             );
           })}
         </div>
+
+        {isAdmin && (
+          <Button onClick={() => navigate('/admin')} className="w-full mb-6">
+            <ShieldCheck size={16} /> Painel Admin
+          </Button>
+        )}
       </div>
     </div>
   );

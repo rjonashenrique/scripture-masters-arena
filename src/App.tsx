@@ -18,6 +18,7 @@ import RankingPage from "@/pages/RankingPage";
 import BibleReaderPage from "@/pages/BibleReaderPage";
 import DevotionalPage from "@/pages/DevotionalPage";
 import ReadingPlanPage from "@/pages/ReadingPlanPage";
+import AdminPage from "@/pages/AdminPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import { useAuth } from "@/contexts/AuthContext";
@@ -60,7 +61,7 @@ function AppRoutes() {
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
-        
+        <Route path="/admin" element={<AdminPage />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

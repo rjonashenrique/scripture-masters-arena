@@ -474,16 +474,40 @@ export type Database = {
       }
       quiz_questions: {
         Row: {
+          category: string | null
           correct_answer: number
+          created_at: string
+          difficulty: string | null
+          explanation: string | null
           id: number
+          options: Json
+          question: string | null
+          reference: string | null
+          updated_at: string
         }
         Insert: {
+          category?: string | null
           correct_answer: number
-          id: number
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          id?: number
+          options?: Json
+          question?: string | null
+          reference?: string | null
+          updated_at?: string
         }
         Update: {
+          category?: string | null
           correct_answer?: number
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
           id?: number
+          options?: Json
+          question?: string | null
+          reference?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -676,6 +700,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       weekly_challenges: {
         Row: {
           challenge_type: string
@@ -728,7 +773,9 @@ export type Database = {
         Args: { p_correct: number; p_display_name: string; p_points: number }
         Returns: undefined
       }
+      admin_exists: { Args: never; Returns: boolean }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
+      claim_admin: { Args: never; Returns: undefined }
       contribute_challenge_progress: {
         Args: {
           p_amount?: number
@@ -738,6 +785,7 @@ export type Database = {
         Returns: undefined
       }
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
+      get_admin_metrics: { Args: never; Returns: Json }
       get_church_stats: {
         Args: { p_church_id: string }
         Returns: {
@@ -760,6 +808,13 @@ export type Database = {
         }[]
       }
       get_league_tier: { Args: { p_points: number }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       kick_clan_member: {
         Args: { p_church_id: string; p_target_user_id: string }
         Returns: undefined
@@ -792,7 +847,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -919,6 +974,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

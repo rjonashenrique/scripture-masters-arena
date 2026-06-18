@@ -23,11 +23,8 @@ export function useUserRole() {
     setIsAdmin(admin);
 
     // Detect whether any admin exists (only matters for bootstrap)
-    const { count } = await supabase
-      .from('user_roles')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'admin');
-    setAdminExists((count ?? 0) > 0);
+    const { data: exists } = await (supabase.rpc as any)('admin_exists');
+    setAdminExists(!!exists);
     setLoading(false);
   }, [user]);
 

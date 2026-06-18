@@ -43,7 +43,8 @@ export default function UsersTab() {
     if (input === null) return;
     const value = parseInt(input, 10);
     if (isNaN(value) || value < 0) return toast.error('Valor inválido');
-    const { error } = await supabase.from('profiles').update({ [field]: value }).eq('id', id);
+    const update = field === 'coins' ? { coins: value } : { total_points: value };
+    const { error } = await supabase.from('profiles').update(update).eq('id', id);
     if (error) return toast.error('Erro ao atualizar');
     toast.success('Atualizado');
     load();

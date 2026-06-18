@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { getStats, getLevel, ACHIEVEMENTS } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown } from 'lucide-react';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 
 export default function ProfilePage() {

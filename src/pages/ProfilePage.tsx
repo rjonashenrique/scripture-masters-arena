@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const { isAdmin } = useUserRole();
+  const navigate = useNavigate();
   const stats = getStats();
   const level = getLevel(stats.totalPoints);
   const accuracy = stats.totalAnswered > 0 ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;

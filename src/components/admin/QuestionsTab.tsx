@@ -204,6 +204,9 @@ export default function QuestionsTab() {
           <DownloadCloud size={14} /> {importing ? 'Importando...' : 'Importar do app'}
         </Button>
       </div>
+      <Button onClick={() => setGenOpen(true)} size="sm" variant="secondary" className="w-full">
+        <Sparkles size={14} /> Gerar com IA a partir de um texto
+      </Button>
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input

@@ -56,6 +56,55 @@ export default function QuestionsTab() {
   const [form, setForm] = useState(emptyForm);
   const [importing, setImporting] = useState(false);
 
+  // AI generator
+  const [genOpen, setGenOpen] = useState(false);
+  const [genText, setGenText] = useState('');
+  const [genCount, setGenCount] = useState(5);
+  const [genDifficulty, setGenDifficulty] = useState('medium');
+  const [genCategory, setGenCategory] = useState('Conhecimento Geral');
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState<GeneratedQuestion[]>([]);
+  const [savingGen, setSavingGen] = useState(false);
+
+  const generate = async () => {
+    if (genText.trim().length < 20) return toast.error('Forneça um texto com mais conteúdo');
+    setGenerating(true);
+    setGenerated([]);
+    const { data, error } = await supabase.functions.invoke('generate-questions', {
+      body: { text: genText, count: genCount, difficulty: genDifficulty, category: genCategory },
+    });
+    setGenerating(false);
+    if (error) {
+      let msg = error.message;
+      try {
+        const ctx = await (error as any).context?.json?.();
+        if (ctx?.error) msg = ctx.error;
+      } catch { /* ignore */ }
+      return toast.error('Erro ao gerar: ' + msg);
+    }
+    const qs: GeneratedQuestion[] = data?.questions ?? [];
+    if (qs.length === 0) return toast.error('Nenhuma pergunta gerada. Tente outro texto.');
+    setGenerated(qs);
+    toast.success(`${qs.length} perguntas geradas. Revise e salve.`);
+  };
+
+  const saveGenerated = async () => {
+    if (generated.length === 0) return;
+    setSavingGen(true);
+    const { error } = await supabase.from('quiz_questions').insert(generated as any);
+    setSavingGen(false);
+    if (error) return toast.error('Erro ao salvar: ' + error.message);
+    toast.success(`${generated.length} perguntas adicionadas ao banco`);
+    setGenerated([]);
+    setGenText('');
+    setGenOpen(false);
+    load();
+  };
+
+  const removeGenerated = (idx: number) => {
+    setGenerated((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase

@@ -11,8 +11,20 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, DownloadCloud, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, DownloadCloud, Search, Sparkles, Check } from 'lucide-react';
 import { questions as staticQuestions } from '@/data/questions';
+
+const CATEGORIES = ['Antigo Testamento', 'Novo Testamento', 'Vida de Jesus', 'Personagens da Bíblia', 'Milagres de Jesus', 'Profetas', 'Conhecimento Geral'];
+
+interface GeneratedQuestion {
+  question: string;
+  options: string[];
+  correct_answer: number;
+  explanation: string;
+  difficulty: string;
+  category: string;
+  reference: string | null;
+}
 
 interface DBQuestion {
   id: number;

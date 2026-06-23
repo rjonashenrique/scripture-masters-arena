@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_generation_logs: {
+        Row: {
+          category: string | null
+          created_at: string
+          difficulty: string | null
+          display_name: string
+          id: string
+          question_count: number
+          source_text: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          difficulty?: string | null
+          display_name?: string
+          id?: string
+          question_count?: number
+          source_text: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          difficulty?: string | null
+          display_name?: string
+          id?: string
+          question_count?: number
+          source_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_config: {
         Row: {
           key: string

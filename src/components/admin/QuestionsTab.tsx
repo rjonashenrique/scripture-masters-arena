@@ -316,6 +316,96 @@ export default function QuestionsTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={genOpen} onOpenChange={(o) => { if (!generating && !savingGen) setGenOpen(o); }}>
+        <DialogContent className="max-h-[88vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles size={18} className="text-secondary" /> Gerar perguntas com IA
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Cole aqui um texto, passagem bíblica ou resumo. A IA criará perguntas baseadas nele."
+              value={genText}
+              onChange={(e) => setGenText(e.target.value)}
+              className="min-h-[140px]"
+            />
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] text-muted-foreground">Quantidade</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={15}
+                  value={genCount}
+                  onChange={(e) => setGenCount(Math.min(Math.max(parseInt(e.target.value) || 1, 1), 15))}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-muted-foreground">Dificuldade</label>
+                <select
+                  value={genDifficulty}
+                  onChange={(e) => setGenDifficulty(e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  <option value="easy">Fácil</option>
+                  <option value="medium">Médio</option>
+                  <option value="hard">Difícil</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] text-muted-foreground">Categoria</label>
+                <select
+                  value={genCategory}
+                  onChange={(e) => setGenCategory(e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <Button onClick={generate} disabled={generating} className="w-full">
+              <Sparkles size={14} /> {generating ? 'Gerando...' : 'Gerar perguntas'}
+            </Button>
+
+            {generated.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-border">
+                <p className="text-xs font-semibold text-foreground">{generated.length} perguntas geradas (revise):</p>
+                {generated.map((q, idx) => (
+                  <div key={idx} className="glass-card p-3 space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold text-foreground">{q.question}</p>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeGenerated(idx)}>
+                        <Trash2 size={13} className="text-destructive" />
+                      </Button>
+                    </div>
+                    <ul className="text-xs space-y-0.5">
+                      {q.options.map((o, i) => (
+                        <li key={i} className={i === q.correct_answer ? 'text-secondary font-medium flex items-center gap-1' : 'text-muted-foreground'}>
+                          {i === q.correct_answer && <Check size={12} />} {o}
+                        </li>
+                      ))}
+                    </ul>
+                    {q.explanation && <p className="text-[10px] text-muted-foreground italic">{q.explanation}</p>}
+                    {q.reference && <p className="text-[10px] text-secondary">{q.reference}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setGenOpen(false)} disabled={generating || savingGen}>Fechar</Button>
+            {generated.length > 0 && (
+              <Button onClick={saveGenerated} disabled={savingGen}>
+                {savingGen ? 'Salvando...' : `Salvar ${generated.length} no banco`}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

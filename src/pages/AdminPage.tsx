@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, Trophy } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, Trophy, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -9,6 +9,7 @@ import MetricsTab from '@/components/admin/MetricsTab';
 import UsersTab from '@/components/admin/UsersTab';
 import QuestionsTab from '@/components/admin/QuestionsTab';
 import ChampionshipsTab from '@/components/admin/ChampionshipsTab';
+import AiLogsTab from '@/components/admin/AiLogsTab';
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -62,17 +63,20 @@ export default function AdminPage() {
 
       <div className="px-5">
         <Tabs defaultValue="metrics">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsList className="grid w-full grid-cols-5 mb-4">
             <TabsTrigger value="metrics"><BarChart3 size={16} /></TabsTrigger>
             <TabsTrigger value="users"><Users size={16} /></TabsTrigger>
             <TabsTrigger value="questions"><HelpCircle size={16} /></TabsTrigger>
             <TabsTrigger value="championships"><Trophy size={16} /></TabsTrigger>
+            <TabsTrigger value="ailogs"><History size={16} /></TabsTrigger>
           </TabsList>
           <TabsContent value="metrics"><MetricsTab /></TabsContent>
           <TabsContent value="users"><UsersTab /></TabsContent>
           <TabsContent value="questions"><QuestionsTab /></TabsContent>
           <TabsContent value="championships"><ChampionshipsTab /></TabsContent>
+          <TabsContent value="ailogs"><AiLogsTab /></TabsContent>
         </Tabs>
+
       </div>
     </div>
   );

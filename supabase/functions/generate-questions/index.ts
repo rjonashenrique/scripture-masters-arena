@@ -162,9 +162,33 @@ Regras:
         reference: q.reference ? String(q.reference).trim() : null,
       }));
 
+    // Record an audit log of this generation (service role bypasses RLS)
+    try {
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (serviceKey) {
+        const admin = createClient(supabaseUrl, serviceKey);
+        const { data: profile } = await admin
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user.id)
+          .maybeSingle();
+        await admin.from("ai_generation_logs").insert({
+          user_id: user.id,
+          display_name: profile?.display_name ?? "",
+          source_text: text,
+          question_count: questions.length,
+          difficulty,
+          category,
+        });
+      }
+    } catch (_e) {
+      // Logging must never break the generation flow
+    }
+
     return new Response(JSON.stringify({ questions }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (error) {
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },

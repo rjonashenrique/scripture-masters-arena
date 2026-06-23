@@ -11,8 +11,20 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, DownloadCloud, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, DownloadCloud, Search, Sparkles, Check } from 'lucide-react';
 import { questions as staticQuestions } from '@/data/questions';
+
+const CATEGORIES = ['Antigo Testamento', 'Novo Testamento', 'Vida de Jesus', 'Personagens da Bíblia', 'Milagres de Jesus', 'Profetas', 'Conhecimento Geral'];
+
+interface GeneratedQuestion {
+  question: string;
+  options: string[];
+  correct_answer: number;
+  explanation: string;
+  difficulty: string;
+  category: string;
+  reference: string | null;
+}
 
 interface DBQuestion {
   id: number;
@@ -43,6 +55,55 @@ export default function QuestionsTab() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [importing, setImporting] = useState(false);
+
+  // AI generator
+  const [genOpen, setGenOpen] = useState(false);
+  const [genText, setGenText] = useState('');
+  const [genCount, setGenCount] = useState(5);
+  const [genDifficulty, setGenDifficulty] = useState('medium');
+  const [genCategory, setGenCategory] = useState('Conhecimento Geral');
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState<GeneratedQuestion[]>([]);
+  const [savingGen, setSavingGen] = useState(false);
+
+  const generate = async () => {
+    if (genText.trim().length < 20) return toast.error('Forneça um texto com mais conteúdo');
+    setGenerating(true);
+    setGenerated([]);
+    const { data, error } = await supabase.functions.invoke('generate-questions', {
+      body: { text: genText, count: genCount, difficulty: genDifficulty, category: genCategory },
+    });
+    setGenerating(false);
+    if (error) {
+      let msg = error.message;
+      try {
+        const ctx = await (error as any).context?.json?.();
+        if (ctx?.error) msg = ctx.error;
+      } catch { /* ignore */ }
+      return toast.error('Erro ao gerar: ' + msg);
+    }
+    const qs: GeneratedQuestion[] = data?.questions ?? [];
+    if (qs.length === 0) return toast.error('Nenhuma pergunta gerada. Tente outro texto.');
+    setGenerated(qs);
+    toast.success(`${qs.length} perguntas geradas. Revise e salve.`);
+  };
+
+  const saveGenerated = async () => {
+    if (generated.length === 0) return;
+    setSavingGen(true);
+    const { error } = await supabase.from('quiz_questions').insert(generated as any);
+    setSavingGen(false);
+    if (error) return toast.error('Erro ao salvar: ' + error.message);
+    toast.success(`${generated.length} perguntas adicionadas ao banco`);
+    setGenerated([]);
+    setGenText('');
+    setGenOpen(false);
+    load();
+  };
+
+  const removeGenerated = (idx: number) => {
+    setGenerated((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -143,6 +204,9 @@ export default function QuestionsTab() {
           <DownloadCloud size={14} /> {importing ? 'Importando...' : 'Importar do app'}
         </Button>
       </div>
+      <Button onClick={() => setGenOpen(true)} size="sm" variant="secondary" className="w-full">
+        <Sparkles size={14} /> Gerar com IA a partir de um texto
+      </Button>
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -249,6 +313,96 @@ export default function QuestionsTab() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button onClick={save}>Salvar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={genOpen} onOpenChange={(o) => { if (!generating && !savingGen) setGenOpen(o); }}>
+        <DialogContent className="max-h-[88vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles size={18} className="text-secondary" /> Gerar perguntas com IA
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Cole aqui um texto, passagem bíblica ou resumo. A IA criará perguntas baseadas nele."
+              value={genText}
+              onChange={(e) => setGenText(e.target.value)}
+              className="min-h-[140px]"
+            />
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] text-muted-foreground">Quantidade</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={15}
+                  value={genCount}
+                  onChange={(e) => setGenCount(Math.min(Math.max(parseInt(e.target.value) || 1, 1), 15))}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-muted-foreground">Dificuldade</label>
+                <select
+                  value={genDifficulty}
+                  onChange={(e) => setGenDifficulty(e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  <option value="easy">Fácil</option>
+                  <option value="medium">Médio</option>
+                  <option value="hard">Difícil</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] text-muted-foreground">Categoria</label>
+                <select
+                  value={genCategory}
+                  onChange={(e) => setGenCategory(e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <Button onClick={generate} disabled={generating} className="w-full">
+              <Sparkles size={14} /> {generating ? 'Gerando...' : 'Gerar perguntas'}
+            </Button>
+
+            {generated.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-border">
+                <p className="text-xs font-semibold text-foreground">{generated.length} perguntas geradas (revise):</p>
+                {generated.map((q, idx) => (
+                  <div key={idx} className="glass-card p-3 space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold text-foreground">{q.question}</p>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeGenerated(idx)}>
+                        <Trash2 size={13} className="text-destructive" />
+                      </Button>
+                    </div>
+                    <ul className="text-xs space-y-0.5">
+                      {q.options.map((o, i) => (
+                        <li key={i} className={i === q.correct_answer ? 'text-secondary font-medium flex items-center gap-1' : 'text-muted-foreground'}>
+                          {i === q.correct_answer && <Check size={12} />} {o}
+                        </li>
+                      ))}
+                    </ul>
+                    {q.explanation && <p className="text-[10px] text-muted-foreground italic">{q.explanation}</p>}
+                    {q.reference && <p className="text-[10px] text-secondary">{q.reference}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setGenOpen(false)} disabled={generating || savingGen}>Fechar</Button>
+            {generated.length > 0 && (
+              <Button onClick={saveGenerated} disabled={savingGen}>
+                {savingGen ? 'Salvando...' : `Salvar ${generated.length} no banco`}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -63,17 +63,20 @@ export default function AdminPage() {
 
       <div className="px-5">
         <Tabs defaultValue="metrics">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsList className="grid w-full grid-cols-5 mb-4">
             <TabsTrigger value="metrics"><BarChart3 size={16} /></TabsTrigger>
             <TabsTrigger value="users"><Users size={16} /></TabsTrigger>
             <TabsTrigger value="questions"><HelpCircle size={16} /></TabsTrigger>
             <TabsTrigger value="championships"><Trophy size={16} /></TabsTrigger>
+            <TabsTrigger value="ailogs"><History size={16} /></TabsTrigger>
           </TabsList>
           <TabsContent value="metrics"><MetricsTab /></TabsContent>
           <TabsContent value="users"><UsersTab /></TabsContent>
           <TabsContent value="questions"><QuestionsTab /></TabsContent>
           <TabsContent value="championships"><ChampionshipsTab /></TabsContent>
+          <TabsContent value="ailogs"><AiLogsTab /></TabsContent>
         </Tabs>
+
       </div>
     </div>
   );

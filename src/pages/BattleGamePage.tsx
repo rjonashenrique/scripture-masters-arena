@@ -108,12 +108,14 @@ export default function BattleGamePage() {
     const newScore = myScore + points;
     setMyScore(newScore);
 
-    const updateData = playerNum === 1
-      ? { player1_answers: newAnswers, player1_score: newScore }
-      : { player2_answers: newAnswers, player2_score: newScore };
-
-    await supabase.from('battles').update(updateData).eq('id', id);
+    await (supabase.rpc as any)('submit_battle_answer', {
+      p_battle_id: id,
+      p_player_num: playerNum,
+      p_question_index: currentIndex,
+      p_answer: answerIndex,
+    });
   };
+
 
   const handleSelect = (optionIndex: number) => {
     if (showResult || !battle) return;

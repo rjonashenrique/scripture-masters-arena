@@ -108,12 +108,14 @@ export default function BattleGamePage() {
     const newScore = myScore + points;
     setMyScore(newScore);
 
-    const updateData = playerNum === 1
-      ? { player1_answers: newAnswers, player1_score: newScore }
-      : { player2_answers: newAnswers, player2_score: newScore };
-
-    await supabase.from('battles').update(updateData).eq('id', id);
+    await (supabase.rpc as any)('submit_battle_answer', {
+      p_battle_id: id,
+      p_player_num: playerNum,
+      p_question_index: currentIndex,
+      p_answer: answerIndex,
+    });
   };
+
 
   const handleSelect = (optionIndex: number) => {
     if (showResult || !battle) return;
@@ -137,7 +139,7 @@ export default function BattleGamePage() {
         // Check if both finished
         const otherAnswers = playerNum === 1 ? battle.player2_answers : battle.player1_answers;
         if (otherAnswers.length >= battle.question_ids.length) {
-          supabase.from('battles').update({ status: 'finished' }).eq('id', battle.id);
+          (supabase.rpc as any)('finish_battle', { p_battle_id: battle.id });
         }
       }
     } else {

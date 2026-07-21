@@ -818,6 +818,7 @@ export type Database = {
         Returns: undefined
       }
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
+      finish_battle: { Args: { p_battle_id: string }; Returns: undefined }
       get_admin_metrics: { Args: never; Returns: Json }
       get_church_stats: {
         Args: { p_church_id: string }
@@ -848,6 +849,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      join_battle: {
+        Args: { p_code: string; p_player_name: string }
+        Returns: string
+      }
       kick_clan_member: {
         Args: { p_church_id: string; p_target_user_id: string }
         Returns: undefined
@@ -866,6 +871,15 @@ export type Database = {
         Returns: undefined
       }
       start_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
+      submit_battle_answer: {
+        Args: {
+          p_answer: number
+          p_battle_id: string
+          p_player_num: number
+          p_question_index: number
+        }
+        Returns: undefined
+      }
       submit_battle_royale_answer: {
         Args: { p_answer: number; p_room_id: string }
         Returns: undefined

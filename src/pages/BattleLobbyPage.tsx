@@ -52,31 +52,19 @@ export default function BattleLobbyPage() {
     setLoading(true);
     localStorage.setItem('bqm_name', playerName.trim());
 
-    const { data, error } = await supabase
-      .from('battles')
-      .select()
-      .eq('code', joinCode.trim().toUpperCase())
-      .eq('status', 'waiting')
-      .single();
+    const { data: battleId, error: joinErr } = await (supabase.rpc as any)('join_battle', {
+      p_code: joinCode.trim().toUpperCase(),
+      p_player_name: playerName.trim(),
+    });
 
-    if (error || !data) {
+    if (joinErr || !battleId) {
       toast.error('Batalha não encontrada ou já iniciada');
       setLoading(false);
       return;
     }
 
-    const { error: updateError } = await supabase
-      .from('battles')
-      .update({ player2_name: playerName.trim(), status: 'playing' })
-      .eq('id', data.id);
+    navigate(`/battle/${battleId}?player=2`);
 
-    if (updateError) {
-      toast.error('Erro ao entrar na batalha');
-      setLoading(false);
-      return;
-    }
-
-    navigate(`/battle/${data.id}?player=2`);
   };
 
   return (

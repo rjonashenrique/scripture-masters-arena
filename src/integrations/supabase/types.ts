@@ -392,6 +392,41 @@ export type Database = {
         }
         Relationships: []
       }
+      clan_applications: {
+        Row: {
+          clan_id: string
+          created_at: string
+          display_name: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clan_id: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          clan_id?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_applications_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clan_join_requests: {
         Row: {
           church_id: string
@@ -423,6 +458,107 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clan_members: {
+        Row: {
+          clan_id: string
+          display_name: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+          xp_contributed: number
+        }
+        Insert: {
+          clan_id: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+          xp_contributed?: number
+        }
+        Update: {
+          clan_id?: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+          xp_contributed?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_members_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clans: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          deleted_at: string | null
+          description: string
+          emblem: string
+          id: string
+          invite_code: string
+          is_active: boolean
+          league: string
+          level: number
+          max_members: number
+          member_count: number
+          name: string
+          owner_id: string
+          tag: string
+          updated_at: string
+          visibility: string
+          xp: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          emblem?: string
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          league?: string
+          level?: number
+          max_members?: number
+          member_count?: number
+          name: string
+          owner_id: string
+          tag: string
+          updated_at?: string
+          visibility?: string
+          xp?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          emblem?: string
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          league?: string
+          level?: number
+          max_members?: number
+          member_count?: number
+          name?: string
+          owner_id?: string
+          tag?: string
+          updated_at?: string
+          visibility?: string
+          xp?: number
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -798,6 +934,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_clan_application: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       accept_join_request: {
         Args: { p_request_id: string }
         Returns: undefined
@@ -809,6 +949,10 @@ export type Database = {
       admin_exists: { Args: never; Returns: boolean }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
+      clan_role_of: {
+        Args: { _clan_id: string; _user_id: string }
+        Returns: string
+      }
       contribute_challenge_progress: {
         Args: {
           p_amount?: number
@@ -817,7 +961,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      create_clan: {
+        Args: {
+          p_description?: string
+          p_display_name?: string
+          p_emblem?: string
+          p_name: string
+          p_tag: string
+          p_visibility?: string
+        }
+        Returns: string
+      }
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
+      delete_clan_v2: {
+        Args: { p_clan_id: string; p_confirm_name: string }
+        Returns: undefined
+      }
       finish_battle: { Args: { p_battle_id: string }; Returns: undefined }
       get_admin_metrics: { Args: never; Returns: Json }
       get_church_stats: {
@@ -857,15 +1016,49 @@ export type Database = {
         Args: { p_church_id: string; p_target_user_id: string }
         Returns: undefined
       }
+      kick_clan_member_v2: {
+        Args: { p_clan_id: string; p_target: string }
+        Returns: undefined
+      }
+      leave_clan: { Args: never; Returns: undefined }
+      my_clan_id: { Args: never; Returns: string }
       register_tournament: {
         Args: { p_display_name: string; p_tournament_id: string }
+        Returns: undefined
+      }
+      reject_clan_application: {
+        Args: { p_request_id: string }
         Returns: undefined
       }
       reject_join_request: {
         Args: { p_request_id: string }
         Returns: undefined
       }
+      request_join_clan: {
+        Args: { p_clan_id: string; p_display_name: string }
+        Returns: string
+      }
+      search_clans: {
+        Args: { p_limit?: number; p_query?: string }
+        Returns: {
+          description: string
+          emblem: string
+          id: string
+          league: string
+          level: number
+          max_members: number
+          member_count: number
+          name: string
+          tag: string
+          visibility: string
+          xp: number
+        }[]
+      }
       set_active_title: { Args: { p_title: string }; Returns: undefined }
+      set_clan_member_role: {
+        Args: { p_clan_id: string; p_role: string; p_target: string }
+        Returns: undefined
+      }
       set_member_role: {
         Args: { p_church_id: string; p_role: string; p_target_user_id: string }
         Returns: undefined
@@ -888,8 +1081,22 @@ export type Database = {
         Args: { p_match_id: string; p_score: number }
         Returns: undefined
       }
+      transfer_clan_lead: {
+        Args: { p_clan_id: string; p_new_leader: string }
+        Returns: undefined
+      }
       transfer_clan_leadership: {
         Args: { p_church_id: string; p_new_leader_id: string }
+        Returns: undefined
+      }
+      update_clan: {
+        Args: {
+          p_avatar_url?: string
+          p_clan_id: string
+          p_description: string
+          p_emblem: string
+          p_visibility: string
+        }
         Returns: undefined
       }
     }

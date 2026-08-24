@@ -1,0 +1,27 @@
+REVOKE EXECUTE ON FUNCTION public.clan_role_of(uuid, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.my_clan_id() FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.create_clan(text, text, text, text, text, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.update_clan(uuid, text, text, text, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.request_join_clan(uuid, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.accept_clan_application(uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.reject_clan_application(uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.set_clan_member_role(uuid, uuid, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.kick_clan_member_v2(uuid, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.leave_clan() FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.transfer_clan_lead(uuid, uuid) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.delete_clan_v2(uuid, text) FROM anon, public;
+REVOKE EXECUTE ON FUNCTION public.search_clans(text, integer) FROM anon, public;
+
+GRANT EXECUTE ON FUNCTION public.clan_role_of(uuid, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.my_clan_id() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.create_clan(text, text, text, text, text, text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.update_clan(uuid, text, text, text, text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.request_join_clan(uuid, text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.accept_clan_application(uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.reject_clan_application(uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.set_clan_member_role(uuid, uuid, text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.kick_clan_member_v2(uuid, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.leave_clan() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.transfer_clan_lead(uuid, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.delete_clan_v2(uuid, text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.search_clans(text, integer) TO authenticated, service_role;

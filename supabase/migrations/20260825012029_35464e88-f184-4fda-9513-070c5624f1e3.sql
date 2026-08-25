@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.protect_clan_progress() FROM public, anon, authenticated;

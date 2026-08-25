@@ -7,6 +7,9 @@ import { recordAnswer, getStats } from '@/lib/gameStore';
 import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { awardClanXp } from '@/hooks/useClan';
+import { toast } from 'sonner';
+
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -95,6 +98,16 @@ export default function QuizPage() {
       setFinished(true);
       // Sync stats to database
       syncStats(getStats());
+      // XP do clã (validado no backend)
+      if (user) {
+        awardClanXp(correctCount, quizQuestions.length, mode === 'challenge' ? 'challenge' : 'quiz').then((res) => {
+
+          if (res && res.granted > 0) {
+            toast.success(`+${res.granted} XP para o seu clã!`);
+          }
+        });
+      }
+
     } else {
       setCurrentIndex((i) => i + 1);
       setSelected(null);

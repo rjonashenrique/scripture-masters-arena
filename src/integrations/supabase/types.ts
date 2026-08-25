@@ -497,6 +497,44 @@ export type Database = {
           },
         ]
       }
+      clan_xp_log: {
+        Row: {
+          clan_id: string
+          correct_answers: number
+          created_at: string
+          id: string
+          source: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          clan_id: string
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          source?: string
+          user_id: string
+          xp: number
+        }
+        Update: {
+          clan_id?: string
+          correct_answers?: number
+          created_at?: string
+          id?: string
+          source?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_xp_log_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clans: {
         Row: {
           avatar_url: string | null
@@ -948,7 +986,13 @@ export type Database = {
       }
       admin_exists: { Args: never; Returns: boolean }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
+      award_clan_xp: {
+        Args: { p_correct: number; p_source?: string; p_total: number }
+        Returns: Json
+      }
       claim_admin: { Args: never; Returns: undefined }
+      clan_league_from_xp: { Args: { p_xp: number }; Returns: string }
+      clan_level_from_xp: { Args: { p_xp: number }; Returns: number }
       clan_role_of: {
         Args: { _clan_id: string; _user_id: string }
         Returns: string

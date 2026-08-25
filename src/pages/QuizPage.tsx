@@ -7,6 +7,9 @@ import { recordAnswer, getStats } from '@/lib/gameStore';
 import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { awardClanXp } from '@/hooks/useClan';
+import { toast } from 'sonner';
+
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];

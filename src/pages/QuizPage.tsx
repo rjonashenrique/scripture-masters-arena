@@ -97,8 +97,8 @@ export default function QuizPage() {
       syncStats(getStats());
       // XP do clã (validado no backend)
       if (user) {
-        const finalCorrect = correctCount + (showResult && selected === quizQuestions[currentIndex]?.correct ? 0 : 0);
-        awardClanXp(finalCorrect, quizQuestions.length, mode === 'challenge' ? 'challenge' : 'quiz').then((res) => {
+        awardClanXp(correctCount, quizQuestions.length, mode === 'challenge' ? 'challenge' : 'quiz').then((res) => {
+
           if (res && res.granted > 0) {
             toast.success(`+${res.granted} XP para o seu clã!`);
           }

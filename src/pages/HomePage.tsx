@@ -43,6 +43,13 @@ export default function HomePage() {
       gradient: 'bg-gradient-to-br from-destructive to-destructive/60',
       path: '/battle-royale',
     },
+    {
+      title: 'Liga de Clãs',
+      desc: 'Crie sua equipe e compita junto',
+      icon: Shield,
+      gradient: 'bg-gradient-gold',
+      path: '/clans',
+    },
   ];
 
   return (

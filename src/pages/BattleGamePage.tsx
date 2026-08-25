@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { getQuestionById } from '@/lib/battleUtils';
 import { Question } from '@/data/questions';
 import { toast } from 'sonner';
+import { awardClanXp } from '@/hooks/useClan';
+
 
 type BattleRow = {
   id: string;

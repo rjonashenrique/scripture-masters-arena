@@ -41,6 +41,34 @@ export interface ClanApplication {
 const rpc = (name: string, args?: Record<string, unknown>) =>
   (supabase.rpc as any)(name, args);
 
+export interface ClanXpResult {
+  granted: number;
+  reason?: string;
+  clan_xp?: number;
+  level?: number;
+  league?: string;
+  daily_remaining?: number;
+}
+
+/**
+ * Concede XP ao clã do jogador logado. Toda a validação (limites diários,
+ * teto por partida e rate limit) acontece no backend.
+ */
+export async function awardClanXp(
+  correct: number,
+  total: number,
+  source: 'quiz' | 'challenge' | 'battle' | 'battle_royale' = 'quiz',
+): Promise<ClanXpResult | null> {
+  const { data, error } = await rpc('award_clan_xp', {
+    p_correct: correct,
+    p_total: total,
+    p_source: source,
+  });
+  if (error) return null;
+  return data as ClanXpResult;
+}
+
+
 export function useClan() {
   const { user } = useAuth();
   const [clan, setClan] = useState<Clan | null>(null);

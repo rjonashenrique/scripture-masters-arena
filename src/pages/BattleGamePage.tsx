@@ -135,6 +135,14 @@ export default function BattleGamePage() {
     if (!battle) return;
     if (currentIndex + 1 >= battle.question_ids.length) {
       setFinished(true);
+      const correctCount = myAnswers.reduce((acc, ans, i) => {
+        const q = getQuestionById(battle.question_ids[i]);
+        return acc + (q && ans === q.correct ? 1 : 0);
+      }, 0);
+      awardClanXp(correctCount, battle.question_ids.length, 'battle').then((res) => {
+        if (res && res.granted > 0) toast.success(`+${res.granted} XP para o seu clã!`);
+      });
+
       if (playerNum === 1 || playerNum === 2) {
         // Check if both finished
         const otherAnswers = playerNum === 1 ? battle.player2_answers : battle.player1_answers;

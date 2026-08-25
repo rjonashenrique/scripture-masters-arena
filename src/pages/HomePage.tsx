@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, Shield } from 'lucide-react';
 import { getStats, getLevel } from '@/lib/gameStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
@@ -42,6 +42,13 @@ export default function HomePage() {
       icon: Skull,
       gradient: 'bg-gradient-to-br from-destructive to-destructive/60',
       path: '/battle-royale',
+    },
+    {
+      title: 'Liga de Clãs',
+      desc: 'Crie sua equipe e compita junto',
+      icon: Shield,
+      gradient: 'bg-gradient-gold',
+      path: '/clans',
     },
   ];
 

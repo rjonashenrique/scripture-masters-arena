@@ -95,6 +95,16 @@ export default function QuizPage() {
       setFinished(true);
       // Sync stats to database
       syncStats(getStats());
+      // XP do clã (validado no backend)
+      if (user) {
+        const finalCorrect = correctCount + (showResult && selected === quizQuestions[currentIndex]?.correct ? 0 : 0);
+        awardClanXp(finalCorrect, quizQuestions.length, mode === 'challenge' ? 'challenge' : 'quiz').then((res) => {
+          if (res && res.granted > 0) {
+            toast.success(`+${res.granted} XP para o seu clã!`);
+          }
+        });
+      }
+
     } else {
       setCurrentIndex((i) => i + 1);
       setSelected(null);

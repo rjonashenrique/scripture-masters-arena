@@ -427,6 +427,59 @@ export type Database = {
           },
         ]
       }
+      clan_invites: {
+        Row: {
+          accepted_at: string | null
+          clan_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          invite_code: string
+          invited_by: string
+          invited_by_name: string
+          invited_user_id: string | null
+          status: string
+          token_hash: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          clan_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invite_code: string
+          invited_by: string
+          invited_by_name?: string
+          invited_user_id?: string | null
+          status?: string
+          token_hash: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          clan_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invite_code?: string
+          invited_by?: string
+          invited_by_name?: string
+          invited_user_id?: string | null
+          status?: string
+          token_hash?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_invites_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clan_join_requests: {
         Row: {
           church_id: string
@@ -976,6 +1029,10 @@ export type Database = {
         Args: { p_request_id: string }
         Returns: undefined
       }
+      accept_clan_invite: {
+        Args: { p_code?: string; p_display_name?: string; p_token?: string }
+        Returns: string
+      }
       accept_join_request: {
         Args: { p_request_id: string }
         Returns: undefined
@@ -990,7 +1047,22 @@ export type Database = {
         Args: { p_correct: number; p_source?: string; p_total: number }
         Returns: Json
       }
+      cancel_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
+      clan_invites_list: {
+        Args: { p_clan_id: string }
+        Returns: {
+          accepted_at: string
+          created_at: string
+          expires_at: string
+          id: string
+          invite_code: string
+          invited_by_name: string
+          invited_name: string
+          invited_user_id: string
+          status: string
+        }[]
+      }
       clan_league_from_xp: { Args: { p_xp: number }; Returns: string }
       clan_level_from_xp: { Args: { p_xp: number }; Returns: number }
       clan_role_of: {
@@ -1016,12 +1088,18 @@ export type Database = {
         }
         Returns: string
       }
+      create_clan_invite: {
+        Args: { p_clan_id: string; p_invited_user_id?: string }
+        Returns: Json
+      }
+      decline_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
       delete_clan_v2: {
         Args: { p_clan_id: string; p_confirm_name: string }
         Returns: undefined
       }
       finish_battle: { Args: { p_battle_id: string }; Returns: undefined }
+      gen_invite_code: { Args: never; Returns: string }
       get_admin_metrics: { Args: never; Returns: Json }
       get_church_stats: {
         Args: { p_church_id: string }
@@ -1066,6 +1144,27 @@ export type Database = {
       }
       leave_clan: { Args: never; Returns: undefined }
       my_clan_id: { Args: never; Returns: string }
+      my_clan_invites: {
+        Args: never
+        Returns: {
+          clan_emblem: string
+          clan_id: string
+          clan_league: string
+          clan_level: number
+          clan_name: string
+          clan_tag: string
+          created_at: string
+          expires_at: string
+          id: string
+          invited_by_name: string
+          max_members: number
+          member_count: number
+        }[]
+      }
+      preview_clan_invite: {
+        Args: { p_code?: string; p_token?: string }
+        Returns: Json
+      }
       register_tournament: {
         Args: { p_display_name: string; p_tournament_id: string }
         Returns: undefined
@@ -1096,6 +1195,17 @@ export type Database = {
           tag: string
           visibility: string
           xp: number
+        }[]
+      }
+      search_players: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          id: string
+          in_clan: boolean
+          invited: boolean
+          total_points: number
         }[]
       }
       set_active_title: { Args: { p_title: string }; Returns: undefined }

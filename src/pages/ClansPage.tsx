@@ -366,37 +366,54 @@ export default function ClansPage() {
               </>
             ) : !clan ? (
               <div className="space-y-4">
-                <div className="glass-card p-6 text-center">
-                  <Shield size={32} className="mx-auto text-secondary mb-2" />
-                  <p className="font-bold text-foreground">Você ainda não tem clã</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {myApplication
-                      ? 'Seu pedido de entrada está aguardando aprovação.'
-                      : 'Crie o seu ou explore os clãs existentes.'}
-                  </p>
-                </div>
-                {myApplication ? (
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    disabled={busy === 'cancel'}
-                    onClick={async () => {
-                      setBusy('cancel');
-                      const { error } = await supabase.from('clan_applications').delete().eq('id', myApplication.id);
-                      setBusy(null);
-                      if (error) return toast.error(errMsg(error));
-                      toast.success('Pedido cancelado');
-                      refresh();
-                    }}
-                  >
-                    Cancelar pedido
-                  </Button>
+                {welcome ? (
+                  <ClanWelcome clanName={welcome} onGo={() => { setWelcome(null); refresh(); }} />
                 ) : (
-                  <CreateClanDialog displayName={displayName} onDone={refresh} />
+                  <>
+                    <ClanInvitesInbox
+                      invites={invites}
+                      displayName={displayName}
+                      onRefresh={refreshInvites}
+                      onJoined={(name) => { setWelcome(name); refreshInvites(); refresh(); }}
+                    />
+                    <div className="glass-card p-6 text-center">
+                      <Shield size={32} className="mx-auto text-secondary mb-2" />
+                      <p className="font-bold text-foreground">Você ainda não tem clã</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {myApplication
+                          ? 'Seu pedido de entrada está aguardando aprovação.'
+                          : 'Crie o seu, use um código de convite ou explore os clãs.'}
+                      </p>
+                    </div>
+                    {myApplication ? (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={busy === 'cancel'}
+                        onClick={async () => {
+                          setBusy('cancel');
+                          const { error } = await supabase.from('clan_applications').delete().eq('id', myApplication.id);
+                          setBusy(null);
+                          if (error) return toast.error(errMsg(error));
+                          toast.success('Pedido cancelado');
+                          refresh();
+                        }}
+                      >
+                        Cancelar pedido
+                      </Button>
+                    ) : (
+                      <CreateClanDialog displayName={displayName} onDone={refresh} />
+                    )}
+                    <JoinByCodeDialog
+                      displayName={displayName}
+                      onJoined={() => { refresh(); refreshInvites(); }}
+                    />
+                    <Button variant="outline" className="w-full" onClick={() => changeTab('explore')}>
+                      Explorar clãs
+                    </Button>
+                  </>
                 )}
-                <Button variant="outline" className="w-full" onClick={() => changeTab('explore')}>
-                  Explorar clãs
-                </Button>
+
               </div>
             ) : (
               <>

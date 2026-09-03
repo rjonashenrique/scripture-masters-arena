@@ -567,9 +567,13 @@ export default function ClansPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="explore" className="mt-4">
+          <TabsContent value="explore" className="mt-4 space-y-4">
+            {!clan && (
+              <JoinByCodeDialog displayName={displayName} onJoined={() => { refresh(); refreshInvites(); }} />
+            )}
             <ExploreClans displayName={displayName} inClan={!!clan} onJoined={refresh} />
           </TabsContent>
+
         </Tabs>
       </div>
     </div>

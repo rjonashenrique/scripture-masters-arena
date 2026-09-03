@@ -1030,7 +1030,12 @@ export type Database = {
         Returns: undefined
       }
       accept_clan_invite: {
-        Args: { p_code?: string; p_display_name?: string; p_token?: string }
+        Args: {
+          p_code?: string
+          p_display_name?: string
+          p_invite_id?: string
+          p_token?: string
+        }
         Returns: string
       }
       accept_join_request: {

@@ -563,6 +563,9 @@ export default function ClansPage() {
                   )}
                   {isLeader && <DeleteClanDialog clanId={clan.id} clanName={clan.name} onDone={refresh} />}
                 </div>
+
+                {canManage && <ClanInvitesManager clanId={clan.id} refreshKey={invitesKey} />}
+
               </>
             )}
           </TabsContent>

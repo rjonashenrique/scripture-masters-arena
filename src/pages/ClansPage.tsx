@@ -3,13 +3,19 @@ import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import {
   Search, Shield, Users, Plus, Crown, LogOut, Settings, Share2, Trash2,
-  ChevronUp, ChevronDown, UserMinus, Check, X, Loader2,
+  ChevronUp, ChevronDown, UserMinus, Check, X, Loader2, UserPlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { useClan, clanLevelInfo, LEAGUES, ROLE_LABEL, type ClanRole } from '@/hooks/useClan';
+import { useMyClanInvites } from '@/hooks/useClanInvites';
+import InviteDialog from '@/components/clan/InviteDialog';
+import ClanInvitesInbox from '@/components/clan/ClanInvitesInbox';
+import ClanInvitesManager from '@/components/clan/ClanInvitesManager';
+import JoinByCodeDialog from '@/components/clan/JoinByCodeDialog';
+import { ClanWelcome } from '@/pages/ClanInvitePage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -291,9 +297,13 @@ export default function ClansPage() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { clan, members, applications, myRole, myApplication, loading, refresh, canManage, isLeader } = useClan();
+  const { invites, refresh: refreshInvites } = useMyClanInvites();
   const [params, setParams] = useSearchParams();
   const [tab, setTab] = useState(params.get('tab') === 'explore' ? 'explore' : 'mine');
   const [busy, setBusy] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [invitesKey, setInvitesKey] = useState(0);
+  const [welcome, setWelcome] = useState<string | null>(null);
 
   const displayName = profile?.display_name || (user?.user_metadata?.display_name as string) || 'Jogador';
   const lvl = useMemo(() => clanLevelInfo(clan?.xp ?? 0), [clan?.xp]);
@@ -362,37 +372,54 @@ export default function ClansPage() {
               </>
             ) : !clan ? (
               <div className="space-y-4">
-                <div className="glass-card p-6 text-center">
-                  <Shield size={32} className="mx-auto text-secondary mb-2" />
-                  <p className="font-bold text-foreground">Você ainda não tem clã</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {myApplication
-                      ? 'Seu pedido de entrada está aguardando aprovação.'
-                      : 'Crie o seu ou explore os clãs existentes.'}
-                  </p>
-                </div>
-                {myApplication ? (
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    disabled={busy === 'cancel'}
-                    onClick={async () => {
-                      setBusy('cancel');
-                      const { error } = await supabase.from('clan_applications').delete().eq('id', myApplication.id);
-                      setBusy(null);
-                      if (error) return toast.error(errMsg(error));
-                      toast.success('Pedido cancelado');
-                      refresh();
-                    }}
-                  >
-                    Cancelar pedido
-                  </Button>
+                {welcome ? (
+                  <ClanWelcome clanName={welcome} onGo={() => { setWelcome(null); refresh(); }} />
                 ) : (
-                  <CreateClanDialog displayName={displayName} onDone={refresh} />
+                  <>
+                    <ClanInvitesInbox
+                      invites={invites}
+                      displayName={displayName}
+                      onRefresh={refreshInvites}
+                      onJoined={(name) => { setWelcome(name); refreshInvites(); refresh(); }}
+                    />
+                    <div className="glass-card p-6 text-center">
+                      <Shield size={32} className="mx-auto text-secondary mb-2" />
+                      <p className="font-bold text-foreground">Você ainda não tem clã</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {myApplication
+                          ? 'Seu pedido de entrada está aguardando aprovação.'
+                          : 'Crie o seu, use um código de convite ou explore os clãs.'}
+                      </p>
+                    </div>
+                    {myApplication ? (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={busy === 'cancel'}
+                        onClick={async () => {
+                          setBusy('cancel');
+                          const { error } = await supabase.from('clan_applications').delete().eq('id', myApplication.id);
+                          setBusy(null);
+                          if (error) return toast.error(errMsg(error));
+                          toast.success('Pedido cancelado');
+                          refresh();
+                        }}
+                      >
+                        Cancelar pedido
+                      </Button>
+                    ) : (
+                      <CreateClanDialog displayName={displayName} onDone={refresh} />
+                    )}
+                    <JoinByCodeDialog
+                      displayName={displayName}
+                      onJoined={() => { refresh(); refreshInvites(); }}
+                    />
+                    <Button variant="outline" className="w-full" onClick={() => changeTab('explore')}>
+                      Explorar clãs
+                    </Button>
+                  </>
                 )}
-                <Button variant="outline" className="w-full" onClick={() => changeTab('explore')}>
-                  Explorar clãs
-                </Button>
+
               </div>
             ) : (
               <>
@@ -426,13 +453,27 @@ export default function ClansPage() {
                     <p className="text-xs text-muted-foreground mt-2 italic">"{clan.description}"</p>
                   )}
                   <div className="grid grid-cols-2 gap-2 mt-4">
-                    <Button variant="outline" size="sm" onClick={share}>
-                      <Share2 size={14} className="mr-1" /> Convidar
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => (canManage ? setInviteOpen(true) : share())}
+                    >
+                      {canManage ? <UserPlus size={14} className="mr-1" /> : <Share2 size={14} className="mr-1" />} Convidar
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => changeTab('explore')}>
                       <Shield size={14} className="mr-1" /> Explorar
                     </Button>
                   </div>
+                  {canManage && (
+                    <InviteDialog
+                      open={inviteOpen}
+                      onOpenChange={setInviteOpen}
+                      clanId={clan.id}
+                      clanName={clan.name}
+                      onChanged={() => setInvitesKey((k) => k + 1)}
+                    />
+                  )}
+
                 </motion.div>
 
                 {/* Pedidos pendentes */}
@@ -559,13 +600,20 @@ export default function ClansPage() {
                   )}
                   {isLeader && <DeleteClanDialog clanId={clan.id} clanName={clan.name} onDone={refresh} />}
                 </div>
+
+                {canManage && <ClanInvitesManager clanId={clan.id} refreshKey={invitesKey} />}
+
               </>
             )}
           </TabsContent>
 
-          <TabsContent value="explore" className="mt-4">
+          <TabsContent value="explore" className="mt-4 space-y-4">
+            {!clan && (
+              <JoinByCodeDialog displayName={displayName} onJoined={() => { refresh(); refreshInvites(); }} />
+            )}
             <ExploreClans displayName={displayName} inClan={!!clan} onJoined={refresh} />
           </TabsContent>
+
         </Tabs>
       </div>
     </div>

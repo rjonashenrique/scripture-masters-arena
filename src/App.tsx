@@ -43,6 +43,16 @@ function AppRoutes() {
   }
 
   if (!user) {
+    if (window.location.pathname.startsWith('/clan/invite/')) {
+      return (
+        <div className="max-w-md mx-auto relative">
+          <Routes>
+            <Route path="/clan/invite/:token" element={<ClanInvitePage />} />
+            <Route path="*" element={<AuthPage />} />
+          </Routes>
+        </div>
+      );
+    }
     return <AuthPage />;
   }
 
@@ -58,6 +68,8 @@ function AppRoutes() {
         <Route path="/battle-royale/:id" element={<BattleRoyaleGamePage />} />
         <Route path="/ranking" element={<RankingPage />} />
         <Route path="/clans" element={<ClansPage />} />
+        <Route path="/clan/invite/:token" element={<ClanInvitePage />} />
+
         <Route path="/bible" element={<BibleReaderPage />} />
         <Route path="/reading-plan" element={<ReadingPlanPage />} />
         <Route path="/devotional" element={<DevotionalPage />} />

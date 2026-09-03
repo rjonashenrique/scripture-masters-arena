@@ -291,9 +291,13 @@ export default function ClansPage() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { clan, members, applications, myRole, myApplication, loading, refresh, canManage, isLeader } = useClan();
+  const { invites, refresh: refreshInvites } = useMyClanInvites();
   const [params, setParams] = useSearchParams();
   const [tab, setTab] = useState(params.get('tab') === 'explore' ? 'explore' : 'mine');
   const [busy, setBusy] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [invitesKey, setInvitesKey] = useState(0);
+  const [welcome, setWelcome] = useState<string | null>(null);
 
   const displayName = profile?.display_name || (user?.user_metadata?.display_name as string) || 'Jogador';
   const lvl = useMemo(() => clanLevelInfo(clan?.xp ?? 0), [clan?.xp]);

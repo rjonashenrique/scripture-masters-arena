@@ -3,13 +3,19 @@ import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import {
   Search, Shield, Users, Plus, Crown, LogOut, Settings, Share2, Trash2,
-  ChevronUp, ChevronDown, UserMinus, Check, X, Loader2,
+  ChevronUp, ChevronDown, UserMinus, Check, X, Loader2, UserPlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { useClan, clanLevelInfo, LEAGUES, ROLE_LABEL, type ClanRole } from '@/hooks/useClan';
+import { useMyClanInvites } from '@/hooks/useClanInvites';
+import InviteDialog from '@/components/clan/InviteDialog';
+import ClanInvitesInbox from '@/components/clan/ClanInvitesInbox';
+import ClanInvitesManager from '@/components/clan/ClanInvitesManager';
+import JoinByCodeDialog from '@/components/clan/JoinByCodeDialog';
+import { ClanWelcome } from '@/pages/ClanInvitePage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

@@ -24,9 +24,8 @@ export default function ClanInvitesInbox({
   const accept = async (inv: MyClanInvite) => {
     setBusy(inv.id);
     const { error } = await clanRpc('accept_clan_invite', {
-      p_token: null, p_code: null, p_display_name: displayName,
+      p_token: null, p_code: null, p_display_name: displayName, p_invite_id: inv.id,
     });
-    // convites por usuário são aceitos pelo código do próprio convite
     setBusy(null);
     if (error) return toast.error(errMsg(error));
     onJoined(inv.clan_name);

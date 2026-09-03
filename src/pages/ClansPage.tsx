@@ -447,13 +447,27 @@ export default function ClansPage() {
                     <p className="text-xs text-muted-foreground mt-2 italic">"{clan.description}"</p>
                   )}
                   <div className="grid grid-cols-2 gap-2 mt-4">
-                    <Button variant="outline" size="sm" onClick={share}>
-                      <Share2 size={14} className="mr-1" /> Convidar
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => (canManage ? setInviteOpen(true) : share())}
+                    >
+                      {canManage ? <UserPlus size={14} className="mr-1" /> : <Share2 size={14} className="mr-1" />} Convidar
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => changeTab('explore')}>
                       <Shield size={14} className="mr-1" /> Explorar
                     </Button>
                   </div>
+                  {canManage && (
+                    <InviteDialog
+                      open={inviteOpen}
+                      onOpenChange={setInviteOpen}
+                      clanId={clan.id}
+                      clanName={clan.name}
+                      onChanged={() => setInvitesKey((k) => k + 1)}
+                    />
+                  )}
+
                 </motion.div>
 
                 {/* Pedidos pendentes */}

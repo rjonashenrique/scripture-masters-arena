@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { BookOpen, Swords, Trophy, User, Shield } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useMyClanInvites } from '@/hooks/useClanInvites';
 
 const tabs = [
   { path: '/', icon: BookOpen, label: 'Início' },
@@ -13,6 +14,7 @@ const tabs = [
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { count } = useMyClanInvites();
 
   // Hide nav during quiz
   if (location.pathname === '/quiz' || location.pathname.startsWith('/battle/') || location.pathname === '/devotional') return null;
@@ -23,6 +25,7 @@ export default function BottomNav() {
         <div className="flex justify-around items-center h-16 px-2">
           {tabs.map(({ path, icon: Icon, label }) => {
             const active = location.pathname === path;
+            const badge = path === '/clans' ? count : 0;
             return (
               <button
                 key={path}
@@ -35,10 +38,17 @@ export default function BottomNav() {
                     className="absolute -top-1 w-8 h-1 rounded-full bg-gradient-gold"
                   />
                 )}
-                <Icon
-                  size={20}
-                  className={active ? 'text-secondary' : 'text-muted-foreground'}
-                />
+                <div className="relative">
+                  <Icon
+                    size={20}
+                    className={active ? 'text-secondary' : 'text-muted-foreground'}
+                  />
+                  {badge > 0 && (
+                    <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                      {badge > 9 ? '9+' : badge}
+                    </span>
+                  )}
+                </div>
                 <span className={`text-[10px] font-semibold ${active ? 'text-secondary' : 'text-muted-foreground'}`}>
                   {label}
                 </span>

@@ -69,20 +69,23 @@ export function useMyClanInvites() {
     refresh();
   }, [refresh]);
 
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel(`invites-${user.id}`)
+      .channel(`invites-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'clan_invites', filter: `invited_user_id=eq.${user.id}` },
-        () => refresh(),
+        () => refreshRef.current(),
       )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, refresh]);
+  }, [user?.id]);
 
   return { invites, loading, refresh, count: invites.length };
 }

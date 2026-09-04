@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          admin_name: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          admin_name?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          admin_name?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
       ai_generation_logs: {
         Row: {
           category: string | null
@@ -59,6 +98,33 @@ export type Database = {
         Update: {
           key?: string
           value?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          category: string
+          key: string
+          label: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          category?: string
+          key: string
+          label?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          category?: string
+          key?: string
+          label?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -678,13 +744,66 @@ export type Database = {
         }
         Relationships: []
       }
+      moderation_reports: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          reporter_id: string | null
+          reporter_name: string
+          resolution: string
+          status: string
+          target_id: string | null
+          target_label: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reporter_id?: string | null
+          reporter_name?: string
+          resolution?: string
+          status?: string
+          target_id?: string | null
+          target_label?: string
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reporter_id?: string | null
+          reporter_name?: string
+          resolution?: string
+          status?: string
+          target_id?: string | null
+          target_label?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           achievements: Json
           active_title: string
+          admin_note: string
           avatar_url: string | null
           best_streak: number
           coins: number
+          competitive_blocked: boolean
           completed_lessons: Json
           created_at: string
           current_streak: number
@@ -695,9 +814,12 @@ export type Database = {
           hard_correct: number
           id: string
           last_play_date: string
+          last_seen_at: string | null
           medium_answered: number
           medium_correct: number
+          status: string
           streak_days: number
+          suspended_until: string | null
           titles: Json
           total_answered: number
           total_correct: number
@@ -708,9 +830,11 @@ export type Database = {
         Insert: {
           achievements?: Json
           active_title?: string
+          admin_note?: string
           avatar_url?: string | null
           best_streak?: number
           coins?: number
+          competitive_blocked?: boolean
           completed_lessons?: Json
           created_at?: string
           current_streak?: number
@@ -721,9 +845,12 @@ export type Database = {
           hard_correct?: number
           id: string
           last_play_date?: string
+          last_seen_at?: string | null
           medium_answered?: number
           medium_correct?: number
+          status?: string
           streak_days?: number
+          suspended_until?: string | null
           titles?: Json
           total_answered?: number
           total_correct?: number
@@ -734,9 +861,11 @@ export type Database = {
         Update: {
           achievements?: Json
           active_title?: string
+          admin_note?: string
           avatar_url?: string | null
           best_streak?: number
           coins?: number
+          competitive_blocked?: boolean
           completed_lessons?: Json
           created_at?: string
           current_streak?: number
@@ -747,14 +876,50 @@ export type Database = {
           hard_correct?: number
           id?: string
           last_play_date?: string
+          last_seen_at?: string | null
           medium_answered?: number
           medium_correct?: number
+          status?: string
           streak_days?: number
+          suspended_until?: string | null
           titles?: Json
           total_answered?: number
           total_correct?: number
           total_points?: number
           total_time_ms?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      question_categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []
@@ -769,7 +934,9 @@ export type Database = {
           id: number
           options: Json
           question: string | null
+          question_type: string
           reference: string | null
+          status: string
           updated_at: string
         }
         Insert: {
@@ -781,7 +948,9 @@ export type Database = {
           id?: number
           options?: Json
           question?: string | null
+          question_type?: string
           reference?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -793,7 +962,48 @@ export type Database = {
           id?: number
           options?: Json
           question?: string | null
+          question_type?: string
           reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      system_announcements: {
+        Row: {
+          audience: string
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          message: string
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          message?: string
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          message?: string
+          starts_at?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -1074,6 +1284,26 @@ export type Database = {
         Returns: undefined
       }
       admin_exists: { Args: never; Returns: boolean }
+      admin_log: {
+        Args: {
+          p_action: string
+          p_entity_id?: string
+          p_entity_type: string
+          p_new?: Json
+          p_old?: Json
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      admin_set_setting: {
+        Args: {
+          p_category?: string
+          p_key: string
+          p_label?: string
+          p_value: Json
+        }
+        Returns: undefined
+      }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       award_clan_xp: {
         Args: { p_correct: number; p_source?: string; p_total: number }
@@ -1155,6 +1385,10 @@ export type Database = {
         }[]
       }
       get_league_tier: { Args: { p_points: number }; Returns: string }
+      has_admin_role: {
+        Args: { _roles: string[]; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1162,6 +1396,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       join_battle: {
         Args: { p_code: string; p_player_name: string }
         Returns: string
@@ -1175,6 +1410,7 @@ export type Database = {
         Returns: undefined
       }
       leave_clan: { Args: never; Returns: undefined }
+      my_admin_roles: { Args: never; Returns: string[] }
       my_clan_id: { Args: never; Returns: string }
       my_clan_invites: {
         Args: never
@@ -1287,7 +1523,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "super_admin" | "moderator" | "editor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1415,7 +1651,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "super_admin", "moderator", "editor"],
     },
   },
 } as const

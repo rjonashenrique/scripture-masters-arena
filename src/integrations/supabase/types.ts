@@ -190,6 +190,33 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_contribution_log: {
+        Row: {
+          amount: number
+          challenge_type: string
+          church_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          challenge_type: string
+          church_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          challenge_type?: string
+          church_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       championship_scores: {
         Row: {
           championship_id: string

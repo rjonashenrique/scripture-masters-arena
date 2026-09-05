@@ -1283,7 +1283,77 @@ export type Database = {
         Args: { p_correct: number; p_display_name: string; p_points: number }
         Returns: undefined
       }
+      admin_clean_clan: {
+        Args: {
+          p_clan_id: string
+          p_clear_avatar?: boolean
+          p_description?: string
+          p_reason?: string
+        }
+        Returns: undefined
+      }
+      admin_dashboard: { Args: { p_days?: number }; Returns: Json }
       admin_exists: { Args: never; Returns: boolean }
+      admin_list_clans: {
+        Args: { p_limit?: number; p_search?: string }
+        Returns: {
+          avatar_url: string
+          created_at: string
+          description: string
+          emblem: string
+          id: string
+          is_active: boolean
+          leader_name: string
+          league: string
+          level: number
+          max_members: number
+          member_count: number
+          name: string
+          tag: string
+          visibility: string
+          xp: number
+        }[]
+      }
+      admin_list_invites: {
+        Args: { p_limit?: number; p_status?: string }
+        Returns: {
+          clan_name: string
+          clan_tag: string
+          created_at: string
+          expires_at: string
+          id: string
+          invited_by_name: string
+          invited_name: string
+          status: string
+        }[]
+      }
+      admin_list_users: {
+        Args: {
+          p_limit?: number
+          p_role?: string
+          p_search?: string
+          p_status?: string
+        }
+        Returns: {
+          admin_note: string
+          avatar_url: string
+          clan_name: string
+          clan_role: string
+          coins: number
+          competitive_blocked: boolean
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          roles: string[]
+          status: string
+          streak_days: number
+          suspended_until: string
+          total_answered: number
+          total_points: number
+          updated_at: string
+        }[]
+      }
       admin_log: {
         Args: {
           p_action: string
@@ -1295,6 +1365,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_resolve_report: {
+        Args: { p_report_id: string; p_resolution?: string; p_status: string }
+        Returns: undefined
+      }
+      admin_set_clan_status: {
+        Args: { p_active: boolean; p_clan_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      admin_set_question_status: {
+        Args: { p_id: number; p_status: string }
+        Returns: undefined
+      }
+      admin_set_role: {
+        Args: { p_grant: boolean; p_role: string; p_user_id: string }
+        Returns: undefined
+      }
       admin_set_setting: {
         Args: {
           p_category?: string
@@ -1303,6 +1389,29 @@ export type Database = {
           p_value: Json
         }
         Returns: undefined
+      }
+      admin_set_user_status: {
+        Args: {
+          p_competitive_blocked?: boolean
+          p_days?: number
+          p_note?: string
+          p_reason?: string
+          p_status: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_suspicious: {
+        Args: never
+        Returns: {
+          accuracy: number
+          display_name: string
+          risk: string
+          total_answered: number
+          total_points: number
+          user_id: string
+          xp_today: number
+        }[]
       }
       advance_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       award_clan_xp: {

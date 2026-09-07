@@ -57,6 +57,14 @@ function AppRoutes() {
     return <AuthPage />;
   }
 
+  if (window.location.pathname.startsWith('/admin')) {
+    return (
+      <Routes>
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    );
+  }
+
   return (
     <div className="max-w-md mx-auto relative">
       <Routes>

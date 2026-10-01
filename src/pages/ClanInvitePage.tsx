@@ -9,7 +9,10 @@ import { useProfile } from '@/hooks/useProfile';
 import { LEAGUES, clanLevelInfo } from '@/hooks/useClan';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import AuthPage from '@/pages/AuthPage';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const rpc = (name: string, args?: Record<string, unknown>) => (supabase.rpc as any)(name, args);
 
@@ -21,6 +24,8 @@ function errMsg(e: unknown) {
 export interface InvitePreview {
   valid: boolean;
   reason: string;
+  invite_id?: string;
+  directed?: boolean;
   invited_by_name: string;
   expires_at: string;
   clan: {
@@ -85,7 +90,7 @@ export function ClanInviteCard({
         <Button className="w-full h-12 font-bold" disabled={busy || full} onClick={onAccept}>
           {busy && <Loader2 size={16} className="mr-2 animate-spin" />} {acceptLabel}
         </Button>
-        <Button variant="outline" className="w-full" onClick={onDecline}>Agora não</Button>
+        <Button variant="outline" className="w-full" onClick={onDecline}>Recusar Convite</Button>
       </div>
     </motion.div>
   );
@@ -107,10 +112,12 @@ export function ClanWelcome({ clanName, onGo }: { clanName: string; onGo: () => 
 const PENDING_KEY = 'pending_clan_invite';
 
 const REASON_TEXT: Record<string, { title: string; hint: string }> = {
-  not_found: { title: 'Convite inválido', hint: 'Este link não existe ou foi removido.' },
+  not_found: { title: '⚠️ Convite inválido', hint: 'Este link não é válido ou não existe.' },
+  wrong_user: { title: '🚫 Convite não disponível', hint: 'Este convite foi enviado para outra conta.' },
+  auth_required: { title: '🔐 Entre na sua conta', hint: 'Entre na sua conta para visualizar este convite.' },
   clan_missing: { title: 'Clã indisponível', hint: 'Este clã não está mais ativo.' },
-  expired: { title: 'Convite expirado', hint: 'Peça um novo convite ao líder do clã.' },
-  cancelled: { title: 'Convite cancelado', hint: 'A liderança do clã cancelou este convite.' },
+  expired: { title: '⌛ Convite expirado', hint: 'Peça ao líder ou vice-líder um novo convite.' },
+  cancelled: { title: '🚫 Convite cancelado', hint: 'Este convite não está mais disponível.' },
   declined: { title: 'Convite recusado', hint: 'Este convite já foi recusado.' },
   accepted: { title: 'Convite já utilizado', hint: 'Este convite já foi aceito por alguém.' },
 };
@@ -122,7 +129,7 @@ export default function ClanInvitePage() {
   const { profile } = useProfile();
   const { data, loading } = usePreviewInvite(token);
   const [busy, setBusy] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [confirmDecline, setConfirmDecline] = useState(false);
   const [joined, setJoined] = useState(false);
   const [alreadyMember, setAlreadyMember] = useState(false);
 
@@ -130,10 +137,6 @@ export default function ClanInvitePage() {
   useEffect(() => {
     if (token) localStorage.setItem(PENDING_KEY, token);
   }, [token]);
-
-  useEffect(() => {
-    if (user && showAuth) setShowAuth(false);
-  }, [user, showAuth]);
 
   // Já pertence a um clã?
   useEffect(() => {
@@ -146,13 +149,8 @@ export default function ClanInvitePage() {
       .then(({ data: m }) => setAlreadyMember(!!m));
   }, [user]);
 
-  if (showAuth && !user) return <AuthPage />;
-
   const accept = async () => {
-    if (!user) {
-      setShowAuth(true);
-      return;
-    }
+    if (!user) return;
     setBusy(true);
     const { error } = await rpc('accept_clan_invite', {
       p_token: token,
@@ -163,6 +161,17 @@ export default function ClanInvitePage() {
     if (error) return toast.error(errMsg(error));
     localStorage.removeItem(PENDING_KEY);
     setJoined(true);
+  };
+
+  const decline = async () => {
+    setConfirmDecline(false);
+    if (data?.directed && data.invite_id) {
+      const { error } = await rpc('decline_clan_invite', { p_invite_id: data.invite_id });
+      if (error) return toast.error(errMsg(error));
+    }
+    localStorage.removeItem(PENDING_KEY);
+    toast.success('Convite recusado');
+    navigate('/clans');
   };
 
   const Info = ({ title, hint }: { title: string; hint: string }) => (
@@ -204,10 +213,22 @@ export default function ClanInvitePage() {
           preview={data}
           busy={busy}
           onAccept={accept}
-          onDecline={() => navigate('/clans')}
-          acceptLabel={user ? '⚔️ Entrar no Clã' : '⚔️ Entrar para aceitar'}
+          onDecline={() => setConfirmDecline(true)}
         />
       )}
+
+      <AlertDialog open={confirmDecline} onOpenChange={setConfirmDecline}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Recusar convite</AlertDialogTitle>
+            <AlertDialogDescription>Tem certeza que deseja recusar este convite?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={decline}>Sim, recusar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

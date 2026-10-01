@@ -104,6 +104,17 @@ export function ClanWelcome({ clanName, onGo }: { clanName: string; onGo: () => 
   );
 }
 
+const PENDING_KEY = 'pending_clan_invite';
+
+const REASON_TEXT: Record<string, { title: string; hint: string }> = {
+  not_found: { title: 'Convite inválido', hint: 'Este link não existe ou foi removido.' },
+  clan_missing: { title: 'Clã indisponível', hint: 'Este clã não está mais ativo.' },
+  expired: { title: 'Convite expirado', hint: 'Peça um novo convite ao líder do clã.' },
+  cancelled: { title: 'Convite cancelado', hint: 'A liderança do clã cancelou este convite.' },
+  declined: { title: 'Convite recusado', hint: 'Este convite já foi recusado.' },
+  accepted: { title: 'Convite já utilizado', hint: 'Este convite já foi aceito por alguém.' },
+};
+
 export default function ClanInvitePage() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -113,10 +124,27 @@ export default function ClanInvitePage() {
   const [busy, setBusy] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [joined, setJoined] = useState(false);
+  const [alreadyMember, setAlreadyMember] = useState(false);
+
+  // Guarda o convite para não perdê-lo durante o login
+  useEffect(() => {
+    if (token) localStorage.setItem(PENDING_KEY, token);
+  }, [token]);
 
   useEffect(() => {
     if (user && showAuth) setShowAuth(false);
   }, [user, showAuth]);
+
+  // Já pertence a um clã?
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('clan_members')
+      .select('clan_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data: m }) => setAlreadyMember(!!m));
+  }, [user]);
 
   if (showAuth && !user) return <AuthPage />;
 
@@ -133,8 +161,21 @@ export default function ClanInvitePage() {
     });
     setBusy(false);
     if (error) return toast.error(errMsg(error));
+    localStorage.removeItem(PENDING_KEY);
     setJoined(true);
   };
+
+  const Info = ({ title, hint }: { title: string; hint: string }) => (
+    <div className="glass-card p-6 text-center">
+      <p className="font-bold text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground mt-1">{hint}</p>
+      <Button variant="outline" className="w-full mt-4" onClick={() => navigate('/clans')}>
+        Ver clãs
+      </Button>
+    </div>
+  );
+
+  const full = data?.clan ? data.clan.member_count >= Math.min(data.clan.max_members, 20) : false;
 
   return (
     <div className="min-h-screen bg-gradient-hero pb-24 px-5 pt-14 safe-area-top">
@@ -143,23 +184,21 @@ export default function ClanInvitePage() {
       </h1>
 
       {loading ? (
-        <Skeleton className="h-80 w-full rounded-xl" />
-      ) : !data || !data.clan ? (
         <div className="glass-card p-6 text-center">
-          <p className="font-bold text-foreground">Convite inválido</p>
-          <p className="text-xs text-muted-foreground mt-1">Este link não existe ou foi removido.</p>
-          <Button variant="outline" className="w-full mt-4" onClick={() => navigate('/clans')}>Ver clãs</Button>
+          <Loader2 size={24} className="mx-auto animate-spin text-primary mb-3" />
+          <p className="text-sm text-muted-foreground">Carregando convite...</p>
+          <Skeleton className="h-48 w-full rounded-xl mt-4" />
         </div>
+      ) : !data || !data.clan ? (
+        <Info {...REASON_TEXT.not_found} />
       ) : joined ? (
         <ClanWelcome clanName={data.clan.name} onGo={() => navigate('/clans')} />
       ) : !data.valid ? (
-        <div className="glass-card p-6 text-center">
-          <p className="font-bold text-foreground">
-            {data.reason === 'expired' ? 'Convite expirado' : 'Convite indisponível'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">Peça um novo convite ao líder do clã.</p>
-          <Button variant="outline" className="w-full mt-4" onClick={() => navigate('/clans')}>Ver clãs</Button>
-        </div>
+        <Info {...(REASON_TEXT[data.reason] ?? REASON_TEXT.not_found)} />
+      ) : alreadyMember ? (
+        <Info title="Você já faz parte de um clã" hint="Saia do clã atual para aceitar outro convite." />
+      ) : full ? (
+        <Info title="Clã cheio" hint="Este clã atingiu o limite de membros." />
       ) : (
         <ClanInviteCard
           preview={data}
@@ -172,3 +211,4 @@ export default function ClanInvitePage() {
     </div>
   );
 }
+

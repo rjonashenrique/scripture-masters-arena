@@ -33,7 +33,9 @@ export default function AuthPage() {
           password,
           options: {
             data: { display_name: displayName.trim() },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: window.location.pathname.startsWith('/clan/invite/')
+              ? window.location.origin + window.location.pathname
+              : window.location.origin,
           },
         });
         if (error) throw error;

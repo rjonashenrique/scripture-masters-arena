@@ -45,12 +45,13 @@ function AppRoutes() {
 
   if (!user) {
     if (window.location.pathname.startsWith('/clan/invite/')) {
+      // Rota privada: sem sessão, só login/cadastro. A URL é mantida, então após entrar o convite abre sozinho.
       return (
         <div className="max-w-md mx-auto relative">
-          <Routes>
-            <Route path="/clan/invite/:token" element={<ClanInvitePage />} />
-            <Route path="*" element={<AuthPage />} />
-          </Routes>
+          <div className="mx-5 mt-4 rounded-xl border border-primary/30 bg-primary/10 p-3 text-center text-sm font-semibold text-foreground">
+            🔐 Entre na sua conta para visualizar este convite.
+          </div>
+          <AuthPage />
         </div>
       );
     }

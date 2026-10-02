@@ -129,7 +129,7 @@ export default function RankingPage() {
                   <p className="text-xs text-muted-foreground">Sua posição</p>
                   <p className="text-sm font-bold text-foreground">{players[myRank].display_name || 'Você'}</p>
                 </div>
-                <p className="text-sm font-extrabold text-gradient-gold">{players[myRank].total_points} pts</p>
+                <p className="text-sm font-extrabold text-gradient-gold">{players[myRank].total_points} {by === "xp" ? "XP" : "pts"}</p>
               </div>
             </div>
           )}
@@ -157,7 +157,7 @@ export default function RankingPage() {
                       <Target size={10} /> {player.total_answered > 0 ? Math.round((player.total_correct / player.total_answered) * 100) : 0}% acertos
                     </span>
                     <span className="flex items-center gap-0.5">
-                      <Flame size={10} /> {player.best_streak} seq.
+                      {by === "xp" ? <>⭐ Nv {player.level}</> : <><Flame size={10} /> {player.best_streak} seq.</>}
                     </span>
                   </div>
                 </div>

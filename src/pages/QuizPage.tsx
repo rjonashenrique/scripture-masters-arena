@@ -8,6 +8,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { awardClanXp } from '@/hooks/useClan';
+import { awardPlayerXp } from '@/hooks/usePlayerLevel';
 import { toast } from 'sonner';
 
 
@@ -37,6 +38,7 @@ export default function QuizPage() {
   const [timeLeft, setTimeLeft] = useState(10);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [finished, setFinished] = useState(false);
+  const [roundStart, setRoundStart] = useState(Date.now());
 
   useEffect(() => {
     let filtered = categoryFilter
@@ -45,6 +47,7 @@ export default function QuizPage() {
     filtered = shuffleArray(filtered).slice(0, 10);
     setQuizQuestions(filtered);
     setQuestionStartTime(Date.now());
+    setRoundStart(Date.now());
   }, [categoryFilter]);
 
   // Timer for challenge mode
@@ -100,6 +103,9 @@ export default function QuizPage() {
       syncStats(getStats());
       // XP do clã (validado no backend)
       if (user) {
+        awardPlayerXp(mode === 'challenge' ? 'challenge' : 'quiz', correctCount, quizQuestions.length, Date.now() - roundStart).then((r) => {
+          if (r && r.granted > 0) toast.success(`⭐ +${r.granted} XP pessoal`);
+        });
         awardClanXp(correctCount, quizQuestions.length, mode === 'challenge' ? 'challenge' : 'quiz').then((res) => {
 
           if (res && res.granted > 0) {
@@ -138,7 +144,7 @@ export default function QuizPage() {
           </p>
           <div className="space-y-3">
             <button
-              onClick={() => { setFinished(false); setCurrentIndex(0); setScore(0); setCorrectCount(0); setSelected(null); setShowResult(false); setQuizQuestions(shuffleArray(categoryFilter ? questions.filter(q => q.category === categoryFilter) : [...questions]).slice(0, 10)); setQuestionStartTime(Date.now()); }}
+              onClick={() => { setFinished(false); setCurrentIndex(0); setScore(0); setCorrectCount(0); setSelected(null); setShowResult(false); setQuizQuestions(shuffleArray(categoryFilter ? questions.filter(q => q.category === categoryFilter) : [...questions]).slice(0, 10)); setQuestionStartTime(Date.now()); setRoundStart(Date.now()); }}
               className="w-full py-3 rounded-xl bg-gradient-primary text-primary-foreground font-bold"
             >
               Jogar Novamente

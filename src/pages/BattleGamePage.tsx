@@ -7,6 +7,7 @@ import { getQuestionById } from '@/lib/battleUtils';
 import { Question } from '@/data/questions';
 import { toast } from 'sonner';
 import { awardClanXp } from '@/hooks/useClan';
+import { awardPlayerXp } from '@/hooks/usePlayerLevel';
 
 
 type BattleRow = {
@@ -37,6 +38,7 @@ export default function BattleGamePage() {
   const [myScore, setMyScore] = useState(0);
   const [myAnswers, setMyAnswers] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
+  const [roundStart] = useState(Date.now());
 
   // Fetch battle data
   useEffect(() => {
@@ -141,6 +143,9 @@ export default function BattleGamePage() {
         const q = getQuestionById(battle.question_ids[i]);
         return acc + (q && ans === q.correct ? 1 : 0);
       }, 0);
+      awardPlayerXp('battle', correctCount, battle.question_ids.length, Date.now() - roundStart).then((r) => {
+        if (r && r.granted > 0) toast.success(`⭐ +${r.granted} XP pessoal`);
+      });
       awardClanXp(correctCount, battle.question_ids.length, 'battle').then((res) => {
         if (res && res.granted > 0) toast.success(`+${res.granted} XP para o seu clã!`);
       });

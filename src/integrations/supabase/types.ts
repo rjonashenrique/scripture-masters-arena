@@ -795,6 +795,42 @@ export type Database = {
         }
         Relationships: []
       }
+      player_xp_log: {
+        Row: {
+          correct_answers: number
+          created_at: string
+          duration_ms: number
+          flagged: boolean
+          id: string
+          source: string
+          total_questions: number
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          correct_answers?: number
+          created_at?: string
+          duration_ms?: number
+          flagged?: boolean
+          id?: string
+          source: string
+          total_questions?: number
+          user_id: string
+          xp: number
+        }
+        Update: {
+          correct_answers?: number
+          created_at?: string
+          duration_ms?: number
+          flagged?: boolean
+          id?: string
+          source?: string
+          total_questions?: number
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           achievements: Json
@@ -815,6 +851,8 @@ export type Database = {
           id: string
           last_play_date: string
           last_seen_at: string | null
+          level: number
+          level_reached_at: string
           medium_answered: number
           medium_correct: number
           status: string
@@ -826,6 +864,7 @@ export type Database = {
           total_points: number
           total_time_ms: number
           updated_at: string
+          xp: number
         }
         Insert: {
           achievements?: Json
@@ -846,6 +885,8 @@ export type Database = {
           id: string
           last_play_date?: string
           last_seen_at?: string | null
+          level?: number
+          level_reached_at?: string
           medium_answered?: number
           medium_correct?: number
           status?: string
@@ -857,6 +898,7 @@ export type Database = {
           total_points?: number
           total_time_ms?: number
           updated_at?: string
+          xp?: number
         }
         Update: {
           achievements?: Json
@@ -877,6 +919,8 @@ export type Database = {
           id?: string
           last_play_date?: string
           last_seen_at?: string | null
+          level?: number
+          level_reached_at?: string
           medium_answered?: number
           medium_correct?: number
           status?: string
@@ -888,6 +932,7 @@ export type Database = {
           total_points?: number
           total_time_ms?: number
           updated_at?: string
+          xp?: number
         }
         Relationships: []
       }
@@ -1418,6 +1463,15 @@ export type Database = {
         Args: { p_correct: number; p_source?: string; p_total: number }
         Returns: Json
       }
+      award_player_xp: {
+        Args: {
+          p_correct: number
+          p_duration_ms: number
+          p_source: string
+          p_total: number
+        }
+        Returns: Json
+      }
       cancel_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
       clan_invites_list: {
@@ -1494,6 +1548,19 @@ export type Database = {
         }[]
       }
       get_league_tier: { Args: { p_points: number }; Returns: string }
+      get_xp_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          active_title: string
+          avatar_url: string
+          display_name: string
+          id: string
+          level: number
+          total_answered: number
+          total_correct: number
+          xp: number
+        }[]
+      }
       has_admin_role: {
         Args: { _roles: string[]; _user_id: string }
         Returns: boolean
@@ -1519,6 +1586,8 @@ export type Database = {
         Returns: undefined
       }
       leave_clan: { Args: never; Returns: undefined }
+      level_milestone_coins: { Args: { p_level: number }; Returns: number }
+      level_title: { Args: { p_level: number }; Returns: string }
       my_admin_roles: { Args: never; Returns: string[] }
       my_clan_id: { Args: never; Returns: string }
       my_clan_invites: {
@@ -1538,6 +1607,9 @@ export type Database = {
           member_count: number
         }[]
       }
+      my_level_info: { Args: never; Returns: Json }
+      player_level_info: { Args: { p_xp: number }; Returns: Json }
+      player_level_name: { Args: { p_level: number }; Returns: string }
       preview_clan_invite: {
         Args: { p_code?: string; p_token?: string }
         Returns: Json
@@ -1630,6 +1702,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      xp_for_next_level: { Args: { p_level: number }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user" | "super_admin" | "moderator" | "editor"

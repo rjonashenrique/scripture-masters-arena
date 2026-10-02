@@ -11,21 +11,30 @@ interface RankPlayer {
   total_correct: number;
   total_answered: number;
   best_streak: number;
+  level?: number;
 }
 
 export default function RankingPage() {
   const { user } = useAuth();
   const [players, setPlayers] = useState<RankPlayer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [by, setBy] = useState<'points' | 'xp'>('points');
+  const unit = by === 'xp' ? 'XP' : 'pontos';
 
   useEffect(() => {
     async function fetchRanking() {
-      const { data } = await supabase.rpc('get_leaderboard', { p_limit: 50 });
-      if (data) setPlayers(data as RankPlayer[]);
+      setLoading(true);
+      if (by === 'xp') {
+        const { data } = await (supabase.rpc as any)('get_xp_leaderboard', { p_limit: 50 });
+        setPlayers(((data ?? []) as any[]).map((p) => ({ ...p, total_points: p.xp, best_streak: 0, level: p.level })));
+      } else {
+        const { data } = await supabase.rpc('get_leaderboard', { p_limit: 50 });
+        if (data) setPlayers(data as RankPlayer[]);
+      }
       setLoading(false);
     }
     fetchRanking();
-  }, []);
+  }, [by]);
 
   const myRank = players.findIndex(p => p.id === user?.id);
 
@@ -42,6 +51,10 @@ export default function RankingPage() {
           Ranking <span className="text-gradient-gold">Global</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">Os melhores jogadores ✝️</p>
+        <div className="flex gap-2 mt-3">
+          <button onClick={() => setBy('points')} className={`px-3 py-1.5 rounded-full text-xs font-bold ${by === 'points' ? 'bg-primary text-primary-foreground' : 'glass-card text-muted-foreground'}`}>Pontos</button>
+          <button onClick={() => setBy('xp')} className={`px-3 py-1.5 rounded-full text-xs font-bold ${by === 'xp' ? 'bg-primary text-primary-foreground' : 'glass-card text-muted-foreground'}`}>⭐ XP / Nível</button>
+        </div>
       </div>
 
       {loading ? (
@@ -66,7 +79,7 @@ export default function RankingPage() {
                   </div>
                   <p className="text-xs font-bold text-foreground truncate">{players[1].display_name || 'Jogador'}</p>
                   <p className="text-sm font-extrabold text-gradient-gold">{players[1].total_points}</p>
-                  <p className="text-[10px] text-muted-foreground">pontos</p>
+                  <p className="text-[10px] text-muted-foreground">{unit}</p>
                 </motion.div>
 
                 {/* 1st place */}
@@ -84,7 +97,7 @@ export default function RankingPage() {
                   </div>
                   <p className="text-sm font-bold text-foreground truncate">{players[0].display_name || 'Jogador'}</p>
                   <p className="text-lg font-extrabold text-gradient-gold">{players[0].total_points}</p>
-                  <p className="text-[10px] text-muted-foreground">pontos</p>
+                  <p className="text-[10px] text-muted-foreground">{unit}</p>
                 </motion.div>
 
                 {/* 3rd place */}
@@ -99,7 +112,7 @@ export default function RankingPage() {
                   </div>
                   <p className="text-xs font-bold text-foreground truncate">{players[2].display_name || 'Jogador'}</p>
                   <p className="text-sm font-extrabold text-gradient-gold">{players[2].total_points}</p>
-                  <p className="text-[10px] text-muted-foreground">pontos</p>
+                  <p className="text-[10px] text-muted-foreground">{unit}</p>
                 </motion.div>
               </div>
             </div>
@@ -116,7 +129,7 @@ export default function RankingPage() {
                   <p className="text-xs text-muted-foreground">Sua posição</p>
                   <p className="text-sm font-bold text-foreground">{players[myRank].display_name || 'Você'}</p>
                 </div>
-                <p className="text-sm font-extrabold text-gradient-gold">{players[myRank].total_points} pts</p>
+                <p className="text-sm font-extrabold text-gradient-gold">{players[myRank].total_points} {by === "xp" ? "XP" : "pts"}</p>
               </div>
             </div>
           )}
@@ -144,7 +157,7 @@ export default function RankingPage() {
                       <Target size={10} /> {player.total_answered > 0 ? Math.round((player.total_correct / player.total_answered) * 100) : 0}% acertos
                     </span>
                     <span className="flex items-center gap-0.5">
-                      <Flame size={10} /> {player.best_streak} seq.
+                      {by === "xp" ? <>⭐ Nv {player.level}</> : <><Flame size={10} /> {player.best_streak} seq.</>}
                     </span>
                   </div>
                 </div>

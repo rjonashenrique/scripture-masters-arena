@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, Shield } from 'lucide-react';
-import { getStats, getLevel } from '@/lib/gameStore';
+import { getStats } from '@/lib/gameStore';
+import { usePlayerLevel, fmtXp } from '@/hooks/usePlayerLevel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import DailyVerseCard from '@/components/DailyVerseCard';
@@ -11,7 +12,8 @@ export default function HomePage() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const stats = getStats();
-  const level = getLevel(stats.totalPoints);
+  const { info } = usePlayerLevel();
+  const level = { level: info?.level ?? 1, name: info?.name ?? 'Iniciante', progress: info?.progress ?? 0 };
   const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Jogador';
 
   const modes = [
@@ -83,12 +85,12 @@ export default function HomePage() {
         >
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="text-xs text-muted-foreground">Nível {level.level}</p>
+              <p className="text-xs text-muted-foreground">⭐ Nível {level.level}</p>
               <p className="text-lg font-bold font-display text-gradient-gold">{level.name}</p>
             </div>
             <div className="flex items-center gap-1">
               <Trophy size={16} className="text-secondary" />
-              <span className="text-sm font-bold text-foreground">{stats.totalPoints} pts</span>
+              <span className="text-sm font-bold text-foreground">{fmtXp(info?.level_xp ?? 0)} / {fmtXp(info?.next_level_xp ?? 100)} XP</span>
             </div>
           </div>
           <div className="w-full h-2 rounded-full bg-muted overflow-hidden">

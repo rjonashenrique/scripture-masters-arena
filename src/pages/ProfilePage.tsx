@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { getStats, getLevel, ACHIEVEMENTS } from '@/lib/gameStore';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { getStats } from '@/lib/gameStore';
+import { usePlayerLevel, fmtXp } from '@/hooks/usePlayerLevel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -11,11 +15,20 @@ import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
-  const { profile } = useProfile();
+  const { profile, fetchProfile } = useProfile();
+  const { info } = usePlayerLevel();
+  const [savingTitle, setSavingTitle] = useState(false);
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const stats = getStats();
-  const level = getLevel(stats.totalPoints);
+  const level = { level: info?.level ?? 1, name: info?.name ?? 'Iniciante', progress: info?.progress ?? 0 };
+  const chooseTitle = async (t: string) => {
+    setSavingTitle(true);
+    const { error } = await (supabase.rpc as any)('set_active_title', { p_title: t });
+    setSavingTitle(false);
+    if (error) return toast.error('Não foi possível trocar o título');
+    fetchProfile();
+  };
   const accuracy = stats.totalAnswered > 0 ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
   const avgTime = stats.totalAnswered > 0 ? (stats.totalTimeMs / stats.totalAnswered / 1000).toFixed(1) : '0';
 
@@ -57,7 +70,8 @@ export default function ProfilePage() {
             </p>
           )}
           <p className="text-xs text-muted-foreground">{user?.email}</p>
-          <p className="text-sm text-muted-foreground mt-1">{level.name} • {stats.totalPoints} pontos</p>
+          <p className="text-sm font-bold text-foreground mt-2">⭐ Nível {level.level} — <span className="text-gradient-gold">{level.name}</span></p>
+          <p className="text-xs text-muted-foreground">{fmtXp(info?.level_xp ?? 0)} / {fmtXp(info?.next_level_xp ?? 100)} XP • {level.progress}%</p>
           <div className="w-full h-2 rounded-full bg-muted mt-3 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -67,6 +81,35 @@ export default function ProfilePage() {
             />
           </div>
         </motion.div>
+
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {[
+            { label: 'XP total', value: fmtXp(info?.total_xp ?? 0) },
+            { label: 'Nível atual', value: level.level },
+            { label: 'Próximo nível', value: info?.next_name ? `${level.level + 1} — ${info.next_name}` : 'Máximo' },
+            { label: 'XP restante', value: fmtXp(info?.remaining_xp ?? 0) },
+          ].map((c) => (
+            <div key={c.label} className="glass-card p-3">
+              <p className="text-sm font-bold text-foreground">{c.value}</p>
+              <p className="text-[10px] text-muted-foreground">{c.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {!!profile?.titles?.length && (
+          <>
+            <h2 className="text-lg font-bold font-display text-foreground mb-3">Títulos</h2>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {profile.titles.map((t) => (
+                <Button key={t} size="sm" disabled={savingTitle}
+                  variant={profile.active_title === t ? 'default' : 'outline'}
+                  onClick={() => chooseTitle(profile.active_title === t ? '' : t)}>
+                  {t}
+                </Button>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Stats grid */}
         <h2 className="text-lg font-bold font-display text-foreground mb-3">Estatísticas</h2>

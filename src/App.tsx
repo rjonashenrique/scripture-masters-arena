@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
+import LevelUpModal from "@/components/LevelUpModal";
 import HomePage from "@/pages/HomePage";
 import QuizPage from "@/pages/QuizPage";
 import ProfilePage from "@/pages/ProfilePage";
@@ -90,6 +91,7 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomNav />
+      <LevelUpModal />
     </div>
   );
 }

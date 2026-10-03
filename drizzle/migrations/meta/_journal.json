@@ -15,6 +15,13 @@
       "when": 1790901703171,
       "tag": "0001_player_level_system",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790993571052,
+      "tag": "0002_shop_and_coins",
+      "breakpoints": true
     }
   ]
 }

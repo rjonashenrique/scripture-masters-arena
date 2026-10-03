@@ -744,6 +744,36 @@ export type Database = {
         }
         Relationships: []
       }
+      coin_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          id: string
+          reason: string
+          ref: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          id?: string
+          reason: string
+          ref?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          ref?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       moderation_reports: {
         Row: {
           category: string
@@ -846,6 +876,9 @@ export type Database = {
           display_name: string
           easy_answered: number
           easy_correct: number
+          equipped_avatar: string | null
+          equipped_badge: string | null
+          equipped_frame: string | null
           hard_answered: number
           hard_correct: number
           id: string
@@ -880,6 +913,9 @@ export type Database = {
           display_name?: string
           easy_answered?: number
           easy_correct?: number
+          equipped_avatar?: string | null
+          equipped_badge?: string | null
+          equipped_frame?: string | null
           hard_answered?: number
           hard_correct?: number
           id: string
@@ -914,6 +950,9 @@ export type Database = {
           display_name?: string
           easy_answered?: number
           easy_correct?: number
+          equipped_avatar?: string | null
+          equipped_badge?: string | null
+          equipped_frame?: string | null
           hard_answered?: number
           hard_correct?: number
           id?: string
@@ -1011,6 +1050,54 @@ export type Database = {
           reference?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      shop_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          featured: boolean
+          icon: string
+          id: string
+          is_active: boolean
+          min_level: number
+          name: string
+          price: number
+          rarity: string
+          sort_order: number
+          style: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string
+          featured?: boolean
+          icon: string
+          id: string
+          is_active?: boolean
+          min_level?: number
+          name: string
+          price: number
+          rarity?: string
+          sort_order?: number
+          style?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          featured?: boolean
+          icon?: string
+          id?: string
+          is_active?: boolean
+          min_level?: number
+          name?: string
+          price?: number
+          rarity?: string
+          sort_order?: number
+          style?: string
         }
         Relationships: []
       }
@@ -1242,6 +1329,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          id: string
+          item_id: string
+          price_paid: number
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          id?: string
+          item_id: string
+          price_paid?: number
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          id?: string
+          item_id?: string
+          price_paid?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1472,6 +1591,7 @@ export type Database = {
         }
         Returns: Json
       }
+      buy_shop_item: { Args: { p_item_id: string }; Returns: Json }
       cancel_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
       clan_invites_list: {
@@ -1521,6 +1641,10 @@ export type Database = {
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
       delete_clan_v2: {
         Args: { p_clan_id: string; p_confirm_name: string }
+        Returns: undefined
+      }
+      equip_item: {
+        Args: { p_category: string; p_item_id: string }
         Returns: undefined
       }
       finish_battle: { Args: { p_battle_id: string }; Returns: undefined }

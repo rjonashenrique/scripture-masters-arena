@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { onLevelUp, type XpAward } from '@/hooks/usePlayerLevel';
 
 const CONFETTI = ['✨', '⭐', '🎉', '✝️', '🌟'];
 
 export default function LevelUpModal() {
   const [award, setAward] = useState<XpAward | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => onLevelUp((a) => {
     setAward(a);
@@ -45,6 +47,7 @@ export default function LevelUpModal() {
             ))}
           </div>
           <Button className="w-full h-12 font-bold mt-5" onClick={() => setAward(null)}>Continuar</Button>
+          <Button variant="outline" className="w-full mt-2" onClick={() => { setAward(null); navigate('/inventory'); }}>Ver recompensas</Button>
         </motion.div>
       </DialogContent>
     </Dialog>

@@ -10,6 +10,8 @@ import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Award, Target, Zap, Clock, TrendingUp, Star, LogOut, Crown, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import PlayerAvatar from '@/components/PlayerAvatar';
+import { useShop } from '@/hooks/useShop';
 
 
 
@@ -17,6 +19,7 @@ export default function ProfilePage() {
   const { user, signOut } = useAuth();
   const { profile, fetchProfile } = useProfile();
   const { info } = usePlayerLevel();
+  const { wallet, itemById } = useShop();
   const [savingTitle, setSavingTitle] = useState(false);
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
@@ -60,10 +63,11 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           className="glass-card p-5 mb-6 text-center"
         >
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-gold flex items-center justify-center mb-3 shadow-glow-gold">
-            <span className="text-3xl font-extrabold text-secondary-foreground">{level.level}</span>
+          <div className="mb-3">
+            <PlayerAvatar size={80} icon={itemById(wallet?.equipped_avatar)?.icon}
+              frameStyle={itemById(wallet?.equipped_frame)?.style} fallback={level.level} />
           </div>
-          <h2 className="text-xl font-bold font-display text-gradient-gold">{displayName}</h2>
+          <h2 className="text-xl font-bold font-display text-gradient-gold">{itemById(wallet?.equipped_badge)?.icon} {displayName}</h2>
           {profile?.active_title && (
             <p className="text-xs text-secondary font-bold flex items-center gap-1 justify-center mt-1">
               <Crown size={12} /> {profile.active_title}
@@ -84,7 +88,8 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           {[
-            { label: 'XP total', value: fmtXp(info?.total_xp ?? 0) },
+            { label: '⭐ XP total', value: fmtXp(info?.total_xp ?? 0) },
+            { label: '🪙 Moedas', value: fmtXp(wallet?.coins ?? profile?.coins ?? 0) },
             { label: 'Nível atual', value: level.level },
             { label: 'Próximo nível', value: info?.next_name ? `${level.level + 1} — ${info.next_name}` : 'Máximo' },
             { label: 'XP restante', value: fmtXp(info?.remaining_xp ?? 0) },
@@ -94,6 +99,11 @@ export default function ProfilePage() {
               <p className="text-[10px] text-muted-foreground">{c.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <Button variant="outline" onClick={() => navigate('/shop')}>🛍️ Loja</Button>
+          <Button variant="outline" onClick={() => navigate('/inventory')}>🎒 Inventário</Button>
         </div>
 
         {!!profile?.titles?.length && (

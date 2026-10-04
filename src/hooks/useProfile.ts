@@ -43,7 +43,6 @@ function statsToProfile(stats: PlayerStats): Partial<Profile> {
     hard_answered: stats.hardAnswered,
     hard_correct: stats.hardCorrect,
     total_time_ms: stats.totalTimeMs,
-    coins: stats.coins,
     achievements: stats.achievements,
     completed_lessons: stats.completedLessons,
   };

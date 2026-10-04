@@ -520,6 +520,42 @@ export type Database = {
           },
         ]
       }
+      clan_inventory: {
+        Row: {
+          acquired_at: string
+          bought_by: string
+          clan_id: string
+          item_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          bought_by: string
+          clan_id: string
+          item_id: string
+        }
+        Update: {
+          acquired_at?: string
+          bought_by?: string
+          clan_id?: string
+          item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_inventory_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clan_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clan_invites: {
         Row: {
           accepted_at: string | null
@@ -684,6 +720,8 @@ export type Database = {
       clans: {
         Row: {
           avatar_url: string | null
+          cosmetic_banner: string | null
+          cosmetic_frame: string | null
           created_at: string
           deleted_at: string | null
           description: string
@@ -704,6 +742,8 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          cosmetic_banner?: string | null
+          cosmetic_frame?: string | null
           created_at?: string
           deleted_at?: string | null
           description?: string
@@ -724,6 +764,8 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          cosmetic_banner?: string | null
+          cosmetic_frame?: string | null
           created_at?: string
           deleted_at?: string | null
           description?: string
@@ -770,6 +812,30 @@ export type Database = {
           id?: string
           reason?: string
           ref?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_rewards: {
+        Row: {
+          amount: number
+          created_at: string
+          day: string
+          streak: number
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          day: string
+          streak: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          day?: string
+          streak?: number
           user_id?: string
         }
         Relationships: []
@@ -878,7 +944,9 @@ export type Database = {
           easy_correct: number
           equipped_avatar: string | null
           equipped_badge: string | null
+          equipped_effect: string | null
           equipped_frame: string | null
+          featured_badges: Json
           hard_answered: number
           hard_correct: number
           id: string
@@ -915,7 +983,9 @@ export type Database = {
           easy_correct?: number
           equipped_avatar?: string | null
           equipped_badge?: string | null
+          equipped_effect?: string | null
           equipped_frame?: string | null
+          featured_badges?: Json
           hard_answered?: number
           hard_correct?: number
           id: string
@@ -952,7 +1022,9 @@ export type Database = {
           easy_correct?: number
           equipped_avatar?: string | null
           equipped_badge?: string | null
+          equipped_effect?: string | null
           equipped_frame?: string | null
+          featured_badges?: Json
           hard_answered?: number
           hard_correct?: number
           id?: string
@@ -1053,11 +1125,137 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_bundle_items: {
+        Row: {
+          bundle_id: string
+          item_id: string
+        }
+        Insert: {
+          bundle_id: string
+          item_id: string
+        }
+        Update: {
+          bundle_id?: string
+          item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "shop_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_bundle_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_bundles: {
+        Row: {
+          created_at: string
+          description: string
+          featured: boolean
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          featured?: boolean
+          icon?: string
+          id: string
+          is_active?: boolean
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          featured?: boolean
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      shop_collections: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          reward_item_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id: string
+          name: string
+          reward_item_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          reward_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_collections_reward_item_id_fkey"
+            columns: ["reward_item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_events: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string | null
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          kind: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shop_items: {
         Row: {
           category: string
+          clan_slot: string | null
+          collection: string | null
           created_at: string
           description: string
+          ends_at: string | null
+          event_label: string
           featured: boolean
           icon: string
           id: string
@@ -1065,14 +1263,24 @@ export type Database = {
           min_level: number
           name: string
           price: number
+          purchasable: boolean
           rarity: string
+          requirement: string | null
+          requirement_label: string
+          sold_count: number
           sort_order: number
+          starts_at: string | null
+          stock_limit: number | null
           style: string
         }
         Insert: {
           category: string
+          clan_slot?: string | null
+          collection?: string | null
           created_at?: string
           description?: string
+          ends_at?: string | null
+          event_label?: string
           featured?: boolean
           icon: string
           id: string
@@ -1080,14 +1288,24 @@ export type Database = {
           min_level?: number
           name: string
           price: number
+          purchasable?: boolean
           rarity?: string
+          requirement?: string | null
+          requirement_label?: string
+          sold_count?: number
           sort_order?: number
+          starts_at?: string | null
+          stock_limit?: number | null
           style?: string
         }
         Update: {
           category?: string
+          clan_slot?: string | null
+          collection?: string | null
           created_at?: string
           description?: string
+          ends_at?: string | null
+          event_label?: string
           featured?: boolean
           icon?: string
           id?: string
@@ -1095,8 +1313,14 @@ export type Database = {
           min_level?: number
           name?: string
           price?: number
+          purchasable?: boolean
           rarity?: string
+          requirement?: string | null
+          requirement_label?: string
+          sold_count?: number
           sort_order?: number
+          starts_at?: string | null
+          stock_limit?: number | null
           style?: string
         }
         Relationships: []
@@ -1329,9 +1553,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_favorites: {
+        Row: {
+          created_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_inventory: {
         Row: {
           acquired_at: string
+          acquisition_source: string
           id: string
           item_id: string
           price_paid: number
@@ -1339,6 +1590,7 @@ export type Database = {
         }
         Insert: {
           acquired_at?: string
+          acquisition_source?: string
           id?: string
           item_id: string
           price_paid?: number
@@ -1346,6 +1598,7 @@ export type Database = {
         }
         Update: {
           acquired_at?: string
+          acquisition_source?: string
           id?: string
           item_id?: string
           price_paid?: number
@@ -1426,6 +1679,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _grant_item: {
+        Args: {
+          p_item: Database["public"]["Tables"]["shop_items"]["Row"]
+          p_source: string
+          p_uid: string
+        }
+        Returns: undefined
+      }
       accept_clan_application: {
         Args: { p_request_id: string }
         Returns: undefined
@@ -1565,6 +1826,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_shop_analytics: { Args: { p_days?: number }; Returns: Json }
       admin_suspicious: {
         Args: never
         Returns: {
@@ -1594,6 +1856,7 @@ export type Database = {
       buy_shop_item: { Args: { p_item_id: string }; Returns: Json }
       cancel_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       claim_admin: { Args: never; Returns: undefined }
+      claim_daily_reward: { Args: never; Returns: Json }
       clan_invites_list: {
         Args: { p_clan_id: string }
         Returns: {
@@ -1637,10 +1900,15 @@ export type Database = {
         Args: { p_clan_id: string; p_invited_user_id?: string }
         Returns: Json
       }
+      daily_reward_status: { Args: never; Returns: Json }
       decline_clan_invite: { Args: { p_invite_id: string }; Returns: undefined }
       delete_clan: { Args: { p_church_id: string }; Returns: undefined }
       delete_clan_v2: {
         Args: { p_clan_id: string; p_confirm_name: string }
+        Returns: undefined
+      }
+      equip_inventory_item: {
+        Args: { p_equip?: boolean; p_item_id: string }
         Returns: undefined
       }
       equip_item: {
@@ -1738,6 +2006,8 @@ export type Database = {
         Args: { p_code?: string; p_token?: string }
         Returns: Json
       }
+      purchase_bundle: { Args: { p_bundle_id: string }; Returns: Json }
+      purchase_shop_item: { Args: { p_item_id: string }; Returns: Json }
       register_tournament: {
         Args: { p_display_name: string; p_tournament_id: string }
         Returns: undefined
@@ -1790,6 +2060,10 @@ export type Database = {
         Args: { p_church_id: string; p_role: string; p_target_user_id: string }
         Returns: undefined
       }
+      shop_requirement_met: {
+        Args: { p_req: string; p_uid: string }
+        Returns: boolean
+      }
       start_battle_royale: { Args: { p_room_id: string }; Returns: undefined }
       submit_battle_answer: {
         Args: {
@@ -1808,6 +2082,7 @@ export type Database = {
         Args: { p_match_id: string; p_score: number }
         Returns: undefined
       }
+      sync_earned_items: { Args: never; Returns: number }
       transfer_clan_lead: {
         Args: { p_clan_id: string; p_new_leader: string }
         Returns: undefined

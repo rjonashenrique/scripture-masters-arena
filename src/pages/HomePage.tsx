@@ -46,6 +46,13 @@ export default function HomePage() {
       path: '/battle-royale',
     },
     {
+      title: 'Loja',
+      desc: 'Troque moedas por avatares, molduras e títulos',
+      icon: Star,
+      gradient: 'bg-gradient-gold',
+      path: '/shop',
+    },
+    {
       title: 'Liga de Clãs',
       desc: 'Crie sua equipe e compita junto',
       icon: Shield,
@@ -70,9 +77,8 @@ export default function HomePage() {
               <Flame size={14} className="text-secondary" />
               <span className="text-xs font-bold text-foreground">{stats.streakDays}</span>
             </div>
-            <div className="flex items-center gap-1 glass-card px-3 py-1.5">
-              <Star size={14} className="text-secondary" />
-              <span className="text-xs font-bold text-foreground">{stats.coins}</span>
+            <div onClick={() => navigate('/shop')} role="button" aria-label="Loja" className="flex items-center gap-1 glass-card px-3 py-1.5 cursor-pointer">
+              <span className="text-xs font-bold text-foreground">🪙 {profile?.coins ?? 0}</span>
             </div>
           </div>
         </div>

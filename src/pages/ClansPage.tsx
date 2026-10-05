@@ -424,8 +424,9 @@ export default function ClansPage() {
             ) : (
               <>
                 {/* Banner do clã */}
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5 text-center">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-primary flex items-center justify-center text-3xl mb-2">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  className={`glass-card p-5 text-center ${CLAN_BANNER_CLASS[(clan as any).cosmetic_banner] ?? ''}`}>
+                  <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-primary flex items-center justify-center text-3xl mb-2 ${FRAME_CLASS[(clan as any).cosmetic_frame] ?? ''}`}>
                     {clan.emblem}
                   </div>
                   <h2 className="text-xl font-extrabold font-display text-foreground uppercase">{clan.name}</h2>

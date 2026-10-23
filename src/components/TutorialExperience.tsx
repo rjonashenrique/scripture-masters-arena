@@ -9,6 +9,7 @@ type TutorialState = {
   goals?: string[];
   knowledge?: string;
   completed_steps?: string[];
+  current_step?: number;
 };
 
 const goalsOptions = [
@@ -52,6 +53,7 @@ export default function TutorialExperience() {
       const saved = localStorage.getItem(storageKey(user.id));
       const parsed: TutorialState = saved ? JSON.parse(saved) : {};
       setData(parsed);
+      setStep(Math.min(Math.max(parsed.current_step ?? 0, 0), lessons.length - 1));
       if (location.pathname === '/' && !parsed.onboarding_completed && !parsed.onboarding_skipped) {
         setStep(0);
         setOpen(true);
@@ -70,14 +72,14 @@ export default function TutorialExperience() {
   const progress = Math.round(((step + 1) / lessons.length) * 100);
 
   const finish = (skipped = false) => {
-    persist({ ...data, onboarding_completed: !skipped, onboarding_skipped: skipped, completed_steps: [...new Set([...(data.completed_steps ?? []), ...lessons.slice(0, step + 1).map((l) => l.key)])] });
+    persist({ ...data, current_step: step, onboarding_completed: !skipped, onboarding_skipped: skipped, completed_steps: [...new Set([...(data.completed_steps ?? []), ...lessons.slice(0, step + 1).map((l) => l.key)])] });
     setOpen(false);
     setContextHelp(false);
   };
   const next = () => {
     if (current.key === 'goals' || current.key === 'knowledge') {
       // Persist the current preference selection before advancing.
-      persist({ ...data, completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])] });
+      persist({ ...data, current_step: Math.min(step + 1, lessons.length - 1), completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])] });
     } else {
       persist({ ...data, completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])] });
     }
@@ -150,7 +152,7 @@ export default function TutorialExperience() {
                 <div className="w-14 h-14 rounded-2xl bg-gradient-gold flex items-center justify-center mb-4"><current.icon size={28} className="text-secondary-foreground" /></div>
                 <h2 id="tutorial-title" className="text-xl sm:text-2xl font-extrabold text-foreground mb-2">{current.title}</h2>
                 <p className="text-sm text-foreground leading-relaxed mb-3">{current.body}</p>
-                {current.quiz && (
+                {current.key === 'quiz' && (
                   <div className="space-y-2 mb-4">
                     {['Abraão', 'Moisés', 'Noé', 'Davi'].map((option, i) => (
                       <button key={option} type="button" onClick={() => setAnswer(i)} disabled={answer !== null} className={`w-full rounded-xl border p-3 text-left text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${answer === i ? (i === 2 ? 'border-emerald-500 bg-emerald-500/10 text-foreground' : 'border-destructive bg-destructive/10 text-foreground') : answer !== null && i === 2 ? 'border-emerald-500 bg-emerald-500/10 text-foreground' : 'border-border bg-muted/40 text-foreground'}`}>
@@ -172,7 +174,7 @@ export default function TutorialExperience() {
                 </div>}
                 <div className="flex items-center gap-2">
                   <button type="button" disabled={step === 0} onClick={() => { setStep((s) => Math.max(0, s - 1)); setAnswer(null); }} className="rounded-xl border border-border px-3 py-3 text-sm font-bold text-foreground disabled:opacity-40"><ChevronLeft size={16} className="inline" /> Voltar</button>
-                  <button type="button" onClick={next} disabled={!!current.quiz && answer === null} className="flex-1 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-40">{step === lessons.length - 1 ? 'Concluir' : 'Próximo'} <ChevronRight size={16} className="inline" /></button>
+                  <button type="button" onClick={next} disabled={current.key === 'quiz' && answer === null} className="flex-1 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-40">{step === lessons.length - 1 ? 'Concluir' : 'Próximo'} <ChevronRight size={16} className="inline" /></button>
                   <button type="button" onClick={() => finish(true)} className="rounded-xl px-2 py-3 text-xs font-semibold text-muted-foreground"><SkipForward size={15} className="inline" /> Pular</button>
                 </div>
               </>

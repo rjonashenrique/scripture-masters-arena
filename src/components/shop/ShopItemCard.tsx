@@ -2,13 +2,13 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PlayerAvatar from '@/components/PlayerAvatar';
-import { RARITY, CATEGORY_LABELS, EFFECT_CLASS, fmt, itemStatus, lockReason, type ShopItem } from '@/hooks/useShop';
+import { RARITY, CATEGORY_LABELS, fmt, itemStatus, lockReason, type ShopItem } from '@/hooks/useShop';
 
 export function ItemPreviewIcon({ it, size = 56 }: { it: ShopItem; size?: number }) {
   if (it.category === 'frame') return <PlayerAvatar size={size} frameStyle={it.style} fallback={it.icon} label={it.name} />;
   if (it.category === 'effect') return <PlayerAvatar size={size} effectStyle={it.style} fallback={it.icon} label={it.name} />;
   return (
-    <div role="img" aria-label={it.name} className={`rounded-2xl bg-muted flex items-center justify-center ${it.category === 'effect' ? EFFECT_CLASS[it.style] : ''}`}
+    <div role="img" aria-label={it.name} className={`rounded-2xl bg-muted flex items-center justify-center `}
       style={{ width: size, height: size, fontSize: size * 0.55 }}>
       {it.icon}
     </div>

@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, FolderTree, Gamepad2, Map as MapIcon, ShoppingBag,
   Trophy, Swords, Medal, Award, Target, Siren, LineChart, Megaphone, Settings, ScrollText, Menu, History,
-  Bell, Calendar, Coins, Flag, ClipboardList,
+  Bell, Calendar, Coins, Flag,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,7 +30,7 @@ import ComingSoon from '@/components/admin/ComingSoon';
 type SectionId =
   | 'dashboard' | 'users' | 'questions' | 'categories' | 'modes' | 'journey' | 'cup'
   | 'clans' | 'invites' | 'clanwars' | 'battles' | 'seasons' | 'achievements' | 'missions' | 'moderation'
-  | 'analytics' | 'reports' | 'announcements' | 'campaigns' | 'notifications' | 'settings' | 'flags'
+  | 'analytics' | 'announcements' | 'campaigns' | 'notifications' | 'settings' | 'flags'
   | 'audit' | 'ailogs' | 'shop' | 'rewards';
 
 interface Section {
@@ -70,7 +70,6 @@ const SECTIONS: Section[] = [
   },
   { id: 'moderation', label: 'Moderação', icon: Siren, need: 'users', render: () => <ModerationTab /> },
   { id: 'analytics', label: 'Relatórios', icon: LineChart, need: 'staff', render: () => <AnalyticsTab /> },
-  { id: 'reports', label: 'Atividade e métricas', icon: ClipboardList, need: 'staff', render: () => <AnalyticsTab /> },
   { id: 'announcements', label: 'Avisos do sistema', icon: Megaphone, need: 'settings', render: () => <AnnouncementsTab /> },
   { id: 'campaigns', label: 'Campanhas', icon: Calendar, need: 'settings', render: () => <AnnouncementsTab /> },
   { id: 'notifications', label: 'Notificações Push', icon: Bell, need: 'settings', render: () => <ComingSoon title="Notificações Push" items={['Inscrições e preferências de dispositivos', 'Campanhas segmentadas', 'Envio real via backend/Edge Function e histórico de falhas']} /> },

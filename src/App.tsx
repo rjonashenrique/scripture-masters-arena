@@ -12,6 +12,8 @@ import ShopPage from "@/pages/ShopPage";
 import ShopHistoryPage from "@/pages/ShopHistoryPage";
 import InventoryPage from "@/pages/InventoryPage";
 import AchievementsPage from "@/pages/AchievementsPage";
+import PlayerGuidePage from "@/pages/PlayerGuidePage";
+import TutorialExperience from "@/components/TutorialExperience";
 
 import ChallengePage from "@/pages/ChallengePage";
 import BattleLobbyPage from "@/pages/BattleLobbyPage";
@@ -92,12 +94,14 @@ function AppRoutes() {
         <Route path="/shop/history" element={<ShopHistoryPage />} />
         <Route path="/inventory" element={<InventoryPage />} />
         <Route path="/achievements" element={<AchievementsPage />} />
+        <Route path="/help" element={<PlayerGuidePage />} />
         <Route path="/admin" element={<AdminPage />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomNav />
       <LevelUpModal />
+      <TutorialExperience />
     </div>
   );
 }

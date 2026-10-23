@@ -113,6 +113,25 @@ export default function HomePage() {
         </motion.div>
       </div>
 
+      {/* Loja em destaque */}
+      <div className="px-5 mb-4">
+        <button
+          type="button"
+          onClick={() => navigate('/shop')}
+          className="glass-card w-full p-4 flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label={`Abrir Loja. Saldo atual: ${profile?.coins ?? 0} moedas`}
+        >
+          <div className="w-11 h-11 rounded-xl bg-gradient-gold flex items-center justify-center shrink-0">
+            <Star size={22} className="text-secondary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-foreground">🛍️ Loja</p>
+            <p className="text-xs text-muted-foreground">🪙 {profile?.coins ?? 0} moedas · Personalize seu perfil e colecione itens</p>
+          </div>
+          <span className="text-xs font-semibold text-secondary">Abrir Loja →</span>
+        </button>
+      </div>
+
       {/* Daily Verse */}
       <div className="px-5 mb-4">
         <DailyVerseCard />

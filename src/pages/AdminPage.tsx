@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, FolderTree, Gamepad2, Map as MapIcon, ShoppingBag,
   Trophy, Swords, Medal, Award, Target, Siren, LineChart, Megaphone, Settings, ScrollText, Menu, History,
+  Bell, Calendar, Coins, Flag, ClipboardList,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,8 +29,9 @@ import ComingSoon from '@/components/admin/ComingSoon';
 
 type SectionId =
   | 'dashboard' | 'users' | 'questions' | 'categories' | 'modes' | 'journey' | 'cup'
-  | 'clans' | 'invites' | 'seasons' | 'achievements' | 'missions' | 'moderation'
-  | 'analytics' | 'announcements' | 'settings' | 'audit' | 'ailogs' | 'shop';
+  | 'clans' | 'invites' | 'clanwars' | 'battles' | 'seasons' | 'achievements' | 'missions' | 'moderation'
+  | 'analytics' | 'reports' | 'announcements' | 'campaigns' | 'notifications' | 'settings' | 'flags'
+  | 'audit' | 'ailogs' | 'shop' | 'rewards';
 
 interface Section {
   id: SectionId;
@@ -40,7 +42,7 @@ interface Section {
 }
 
 const SECTIONS: Section[] = [
-  { id: 'dashboard', label: 'Visão Geral', icon: BarChart3, need: 'staff', render: () => <DashboardTab /> },
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, need: 'staff', render: () => <DashboardTab /> },
   { id: 'users', label: 'Usuários', icon: Users, need: 'users', render: () => <UsersTab /> },
   { id: 'questions', label: 'Perguntas', icon: HelpCircle, need: 'content', render: () => <QuestionsTab /> },
   { id: 'categories', label: 'Categorias', icon: FolderTree, need: 'content', render: () => <CategoriesTab /> },
@@ -49,9 +51,11 @@ const SECTIONS: Section[] = [
     id: 'journey', label: 'Jornada', icon: MapIcon, need: 'content',
     render: () => <ComingSoon title="Jornada Bíblica" items={['Unidades e lições', 'Ordem e requisitos', 'Provas e XP', 'Taxa de conclusão por unidade']} />,
   },
-  { id: 'cup', label: 'Copa', icon: Trophy, need: 'settings', render: () => <ChampionshipsTab /> },
+  { id: 'battles', label: 'Batalhas e multiplayer', icon: Swords, need: 'staff', render: () => <ComingSoon title="Batalhas e multiplayer" items={['Histórico de partidas e resultados', 'Investigação de partidas suspeitas', 'Correção excepcional com justificativa e auditoria']} /> },
+  { id: 'cup', label: 'Copa Bíblica', icon: Trophy, need: 'settings', render: () => <ChampionshipsTab /> },
   { id: 'clans', label: 'Clãs', icon: Swords, need: 'staff', render: () => <ClansTab /> },
-  { id: 'invites', label: 'Convites', icon: Medal, need: 'staff', render: () => <InvitesTab /> },
+  { id: 'invites', label: 'Convites de clãs', icon: Medal, need: 'staff', render: () => <InvitesTab /> },
+  { id: 'clanwars', label: 'Guerras de clãs', icon: Swords, need: 'staff', render: () => <ComingSoon title="Guerras de clãs" items={['Temporadas e confrontos', 'Resultados e histórico', 'Moderação com motivo e trilha de auditoria']} /> },
   {
     id: 'seasons', label: 'Temporadas', icon: Medal, need: 'settings',
     render: () => <ComingSoon title="Temporadas" items={['Temporada atual e histórico', 'Configuração das ligas Bronze a Lendária', 'Promoções e rebaixamentos']} />,
@@ -65,12 +69,17 @@ const SECTIONS: Section[] = [
     render: () => <ComingSoon title="Missões" items={['Missões diárias, semanais e de evento', 'Objetivo e recompensa', 'Período e modo relacionado']} />,
   },
   { id: 'moderation', label: 'Moderação', icon: Siren, need: 'users', render: () => <ModerationTab /> },
-  { id: 'analytics', label: 'Analytics', icon: LineChart, need: 'staff', render: () => <AnalyticsTab /> },
-  { id: 'announcements', label: 'Avisos', icon: Megaphone, need: 'settings', render: () => <AnnouncementsTab /> },
+  { id: 'analytics', label: 'Relatórios', icon: LineChart, need: 'staff', render: () => <AnalyticsTab /> },
+  { id: 'reports', label: 'Atividade e métricas', icon: ClipboardList, need: 'staff', render: () => <AnalyticsTab /> },
+  { id: 'announcements', label: 'Avisos do sistema', icon: Megaphone, need: 'settings', render: () => <AnnouncementsTab /> },
+  { id: 'campaigns', label: 'Campanhas', icon: Calendar, need: 'settings', render: () => <AnnouncementsTab /> },
+  { id: 'notifications', label: 'Notificações Push', icon: Bell, need: 'settings', render: () => <ComingSoon title="Notificações Push" items={['Inscrições e preferências de dispositivos', 'Campanhas segmentadas', 'Envio real via backend/Edge Function e histórico de falhas']} /> },
+  { id: 'flags', label: 'Feature flags', icon: Flag, need: 'settings', render: () => <SettingsTab only="sistema" title="Feature flags" /> },
   { id: 'settings', label: 'Configurações', icon: Settings, need: 'settings', render: () => <SettingsTab /> },
-  { id: 'audit', label: 'Auditoria', icon: ScrollText, need: 'staff', render: () => <AuditTab /> },
-  { id: 'ailogs', label: 'Histórico IA', icon: History, need: 'content', render: () => <AiLogsTab /> },
-  { id: 'shop', label: 'Loja', icon: ShoppingBag, need: 'settings', render: () => <ShopTab /> },
+  { id: 'audit', label: 'Logs de auditoria', icon: ScrollText, need: 'staff', render: () => <AuditTab /> },
+  { id: 'ailogs', label: 'Logs de IA', icon: History, need: 'content', render: () => <AiLogsTab /> },
+  { id: 'shop', label: 'Loja virtual', icon: ShoppingBag, need: 'settings', render: () => <ShopTab /> },
+  { id: 'rewards', label: 'Moedas e recompensas', icon: Coins, need: 'settings', render: () => <ComingSoon title="Moedas e recompensas" items={['Economia virtual separada do XP permanente', 'Regras de recompensa idempotentes no servidor', 'Histórico de créditos e resgates']} /> },
 ];
 
 export default function AdminPage() {

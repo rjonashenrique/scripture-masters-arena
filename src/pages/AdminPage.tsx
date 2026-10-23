@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
-  ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, FolderTree, Gamepad2, Map as MapIcon,
+  ArrowLeft, ShieldCheck, BarChart3, Users, HelpCircle, FolderTree, Gamepad2, Map as MapIcon, ShoppingBag,
   Trophy, Swords, Medal, Award, Target, Siren, LineChart, Megaphone, Settings, ScrollText, Menu, History,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,12 +23,13 @@ import AnalyticsTab from '@/components/admin/AnalyticsTab';
 import AnnouncementsTab from '@/components/admin/AnnouncementsTab';
 import AuditTab from '@/components/admin/AuditTab';
 import AiLogsTab from '@/components/admin/AiLogsTab';
+import ShopTab from '@/components/admin/ShopTab';
 import ComingSoon from '@/components/admin/ComingSoon';
 
 type SectionId =
   | 'dashboard' | 'users' | 'questions' | 'categories' | 'modes' | 'journey' | 'cup'
   | 'clans' | 'invites' | 'seasons' | 'achievements' | 'missions' | 'moderation'
-  | 'analytics' | 'announcements' | 'settings' | 'audit' | 'ailogs';
+  | 'analytics' | 'announcements' | 'settings' | 'audit' | 'ailogs' | 'shop';
 
 interface Section {
   id: SectionId;
@@ -69,6 +70,7 @@ const SECTIONS: Section[] = [
   { id: 'settings', label: 'Configurações', icon: Settings, need: 'settings', render: () => <SettingsTab /> },
   { id: 'audit', label: 'Auditoria', icon: ScrollText, need: 'staff', render: () => <AuditTab /> },
   { id: 'ailogs', label: 'Histórico IA', icon: History, need: 'content', render: () => <AiLogsTab /> },
+  { id: 'shop', label: 'Loja', icon: ShoppingBag, need: 'settings', render: () => <ShopTab /> },
 ];
 
 export default function AdminPage() {

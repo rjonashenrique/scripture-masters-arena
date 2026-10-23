@@ -55,7 +55,7 @@ export default function TutorialExperience() {
       setData(parsed);
       setStep(Math.min(Math.max(parsed.current_step ?? 0, 0), lessons.length - 1));
       if (location.pathname === '/' && !parsed.onboarding_completed && !parsed.onboarding_skipped) {
-        setStep(0);
+        setStep(Math.min(Math.max(parsed.current_step ?? 0, 0), lessons.length - 1));
         setOpen(true);
       }
     } catch {
@@ -77,12 +77,11 @@ export default function TutorialExperience() {
     setContextHelp(false);
   };
   const next = () => {
-    if (current.key === 'goals' || current.key === 'knowledge') {
-      // Persist the current preference selection before advancing.
-      persist({ ...data, current_step: Math.min(step + 1, lessons.length - 1), completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])] });
-    } else {
-      persist({ ...data, completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])] });
-    }
+    persist({
+      ...data,
+      current_step: Math.min(step + 1, lessons.length - 1),
+      completed_steps: [...new Set([...(data.completed_steps ?? []), current.key])],
+    });
     if (step >= lessons.length - 1) finish(false);
     else { setStep((s) => s + 1); setAnswer(null); }
   };

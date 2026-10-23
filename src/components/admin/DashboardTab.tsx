@@ -45,21 +45,38 @@ export default function DashboardTab() {
   const [days, setDays] = useState(7);
   const [data, setData] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
     setLoading(true);
     (async () => {
-      const { data: res } = await (supabase.rpc as any)('admin_dashboard', { p_days: days });
+      const { data: res, error } = await (supabase.rpc as any)('admin_dashboard', { p_days: days });
       if (!alive) return;
-      setData(res as Dashboard);
+      if (error) {
+        setErrorMessage(error.message || 'Não foi possível carregar as métricas.');
+        setData(null);
+      } else if (!res || typeof res !== 'object') {
+        setErrorMessage('O servidor não retornou dados válidos para o dashboard.');
+        setData(null);
+      } else {
+        setErrorMessage(null);
+        setData(res as Dashboard);
+      }
       setLoading(false);
     })();
     return () => { alive = false; };
   }, [days]);
 
-  if (loading && !data) return <p className="text-sm text-muted-foreground py-10 text-center">Carregando visão geral...</p>;
-  if (!data) return <p className="text-sm text-muted-foreground py-10 text-center">Não foi possível carregar.</p>;
+  if (loading && !data) return <p className="text-sm text-muted-foreground py-10 text-center" role="status">Carregando visão geral...</p>;
+  if (!data) return (
+    <div className="py-10 text-center space-y-3" role="alert">
+      <p className="text-sm text-muted-foreground">{errorMessage ?? 'Não foi possível carregar as métricas.'}</p>
+      <Button size="sm" variant="outline" onClick={() => { setErrorMessage(null); setLoading(true); setDays((current) => current); }}>
+        Tentar novamente
+      </Button>
+    </div>
+  );
 
   const accuracy = data.total_answered > 0 ? ((data.total_correct / data.total_answered) * 100).toFixed(1) : '0';
 
@@ -81,12 +98,12 @@ export default function DashboardTab() {
 
   const diff = ['easy', 'medium', 'hard'].map((k) => ({
     name: k === 'easy' ? 'Fácil' : k === 'medium' ? 'Média' : 'Difícil',
-    taxa: data.difficulty[k].answered > 0
-      ? Math.round((data.difficulty[k].correct / data.difficulty[k].answered) * 100)
+    taxa: (data.difficulty?.[k]?.answered ?? 0) > 0
+      ? Math.round(((data.difficulty?.[k]?.correct ?? 0) / (data.difficulty?.[k]?.answered ?? 1)) * 100)
       : 0,
   }));
 
-  const series = data.signups_series.map((p, i) => ({
+  const series = (data.signups_series ?? []).map((p, i) => ({
     day: fmtDay(p.day),
     novos: p.value,
     ativos: data.active_series[i]?.value ?? 0,
@@ -172,7 +189,7 @@ export default function DashboardTab() {
         </ChartCard>
 
         <ChartCard title="Modos de jogo mais utilizados">
-          <BarChart data={data.modes} layout="vertical">
+          <BarChart data={data.modes ?? []} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" fontSize={11} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
             <YAxis type="category" dataKey="name" width={100} fontSize={11} stroke="hsl(var(--muted-foreground))" />

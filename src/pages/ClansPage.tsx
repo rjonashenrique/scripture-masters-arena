@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { useClan, clanLevelInfo, LEAGUES, ROLE_LABEL, type ClanRole } from '@/hooks/useClan';
+import { CLAN_BANNER_CLASS, FRAME_CLASS } from '@/hooks/useShop';
 import { useMyClanInvites } from '@/hooks/useClanInvites';
 import InviteDialog from '@/components/clan/InviteDialog';
 import ClanInvitesInbox from '@/components/clan/ClanInvitesInbox';
@@ -27,35 +28,6 @@ import {
 } from '@/components/ui/dialog';
 
 const EMBLEMS = ['🛡️', '✝️', '🔥', '👑', '⚔️', '🕊️', '📖', '⭐', '🦁', '🌿'];
-
-/**
- * Classes cosméticas locais para os elementos visuais do clã.
- * Os mapas aceitam chaves vindas de dados antigos/novos; chaves desconhecidas
- * usam o visual base existente, sem interferir no conteúdo nem na responsividade.
- */
-const CLAN_BANNER_CLASS: Record<string, string> = {
-  default: '',
-  classic: '',
-  bronze: 'bg-gradient-to-br from-amber-950/70 via-card to-card border-amber-700/40',
-  silver: 'bg-gradient-to-br from-slate-700/50 via-card to-card border-slate-400/40',
-  gold: 'bg-gradient-to-br from-yellow-900/50 via-card to-card border-yellow-500/40',
-  diamond: 'bg-gradient-to-br from-cyan-950/60 via-card to-card border-cyan-400/40',
-  fire: 'bg-gradient-to-br from-red-950/60 via-card to-card border-orange-500/40',
-  ocean: 'bg-gradient-to-br from-blue-950/60 via-card to-card border-blue-500/40',
-  nature: 'bg-gradient-to-br from-emerald-950/60 via-card to-card border-emerald-500/40',
-  royal: 'bg-gradient-to-br from-violet-950/60 via-card to-card border-violet-500/40',
-  legendary: 'bg-gradient-to-br from-amber-950/70 via-violet-950/40 to-card border-amber-400/50',
-};
-
-const FRAME_CLASS: Record<string, string> = {
-  default: '',
-  none: '',
-  bronze: 'ring-2 ring-amber-700/70 ring-offset-2 ring-offset-background',
-  silver: 'ring-2 ring-slate-300/70 ring-offset-2 ring-offset-background',
-  gold: 'ring-2 ring-yellow-400/80 ring-offset-2 ring-offset-background',
-  diamond: 'ring-2 ring-cyan-300/80 ring-offset-2 ring-offset-background',
-  legendary: 'ring-2 ring-violet-400/80 ring-offset-2 ring-offset-background',
-};
 
 function errMsg(e: unknown) {
   const m = (e as { message?: string })?.message ?? 'Algo deu errado';

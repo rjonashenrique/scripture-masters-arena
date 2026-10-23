@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronDown, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const sections = [
   { title: 'Começando', items: [
@@ -36,6 +37,7 @@ const sections = [
 
 export default function PlayerGuidePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState('Como jogar');
   return (
     <div className="min-h-screen bg-gradient-hero pb-24 px-5 pt-8 safe-area-top">
@@ -43,6 +45,7 @@ export default function PlayerGuidePage() {
         <Button variant="ghost" size="icon" aria-label="Voltar" onClick={() => navigate(-1)}><ArrowLeft size={20} /></Button>
         <div><h1 className="text-2xl font-extrabold font-display text-foreground">📚 Guia do Jogador</h1><p className="text-sm text-muted-foreground">Aprenda no seu ritmo</p></div>
       </div>
+      <div className="flex justify-end mb-3"><Button variant="outline" onClick={() => { if (!user) return; localStorage.setItem(`bqm_tutorial_v1_${user.id}`, JSON.stringify({ onboarding_completed: false, onboarding_skipped: false, completed_steps: [] })); navigate('/'); }}>🔄 Refazer Tutorial</Button></div>
       <div className="glass-card p-4 mb-4 flex items-center gap-3"><BookOpen className="text-secondary shrink-0" size={24} /><p className="text-sm text-muted-foreground">Este guia explica os recursos principais sem alterar seu XP, moedas, conquistas ou clã.</p></div>
       <div className="space-y-4">
         {sections.map((section) => <section key={section.title} className="glass-card p-4">

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, Shield } from 'lucide-react';
+import { BookOpen, Zap, Trophy, Star, Flame, Swords, Skull, Heart, Book, Calendar, Shield, Map } from 'lucide-react';
 import { getStats } from '@/lib/gameStore';
 import { usePlayerLevel, fmtXp } from '@/hooks/usePlayerLevel';
 import { useAuth } from '@/contexts/AuthContext';
@@ -149,6 +149,17 @@ export default function HomePage() {
             <Book size={20} className="text-primary-foreground" />
           </div>
           <p className="text-xs font-bold text-foreground">Ler Bíblia</p>
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => navigate('/journey')}
+          className="glass-card p-4 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
+            <Map size={20} className="text-secondary-foreground" />
+          </div>
+          <p className="text-xs font-bold text-foreground">Jornada</p>
         </motion.button>
         <motion.button
           initial={{ opacity: 0, y: 10 }}

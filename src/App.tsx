@@ -26,6 +26,7 @@ import ClanInvitePage from "@/pages/ClanInvitePage";
 import BibleReaderPage from "@/pages/BibleReaderPage";
 import DevotionalPage from "@/pages/DevotionalPage";
 import ReadingPlanPage from "@/pages/ReadingPlanPage";
+import BiblicalJourneyPage from "@/pages/BiblicalJourneyPage";
 import AdminPage from "@/pages/AdminPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
@@ -88,6 +89,7 @@ function AppRoutes() {
 
         <Route path="/bible" element={<BibleReaderPage />} />
         <Route path="/reading-plan" element={<ReadingPlanPage />} />
+        <Route path="/journey" element={<BiblicalJourneyPage />} />
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/shop" element={<ShopPage />} />

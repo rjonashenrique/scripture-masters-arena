@@ -38,6 +38,8 @@ export const RARITY: Record<Rarity, { label: string; dot: string; cls: string }>
 
 /** Classes visuais (somente tokens do tema). */
 export const FRAME_CLASS: Record<string, string> = {
+  default: '',
+  none: '',
   bronze: 'ring-4 ring-accent',
   silver: 'ring-4 ring-muted-foreground',
   gold: 'ring-4 ring-secondary',
@@ -45,6 +47,7 @@ export const FRAME_CLASS: Record<string, string> = {
   fire: 'ring-4 ring-destructive',
   diamond: 'ring-4 ring-primary shadow-glow-blue',
   legend: 'ring-4 ring-secondary shadow-glow-gold',
+  legendary: 'ring-4 ring-secondary shadow-glow-gold',
   guardian: 'ring-[6px] ring-secondary shadow-glow-gold outline outline-2 outline-offset-4 outline-primary',
 };
 export const EFFECT_CLASS: Record<string, string> = {
@@ -52,8 +55,18 @@ export const EFFECT_CLASS: Record<string, string> = {
   pulse: 'shadow-glow-blue motion-safe:animate-pulse',
 };
 export const CLAN_BANNER_CLASS: Record<string, string> = {
+  default: '',
+  classic: '',
+  bronze: 'bg-gradient-to-br from-amber-950/70 via-card to-card border-amber-700/40',
+  silver: 'bg-gradient-to-br from-slate-700/50 via-card to-card border-slate-400/40',
+  gold: 'bg-gradient-to-br from-yellow-900/50 via-card to-card border-yellow-500/40',
+  diamond: 'bg-gradient-to-br from-cyan-950/60 via-card to-card border-cyan-400/40',
   fire: 'border-2 border-destructive/60 bg-destructive/10',
   sky: 'border-2 border-primary/60 bg-primary/10',
+  ocean: 'bg-gradient-to-br from-blue-950/60 via-card to-card border-blue-500/40',
+  nature: 'bg-gradient-to-br from-emerald-950/60 via-card to-card border-emerald-500/40',
+  royal: 'bg-gradient-to-br from-violet-950/60 via-card to-card border-violet-500/40',
+  legendary: 'bg-gradient-to-br from-amber-950/70 via-violet-950/40 to-card border-amber-400/50',
 };
 
 export interface PlayerWallet {

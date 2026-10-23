@@ -203,7 +203,11 @@ export default function BiblicalJourneyPage() {
             {answered && <div className="mt-4 rounded-xl border border-secondary/20 bg-secondary/5 p-3" aria-live="polite">
               <p className="mb-1 text-sm font-bold text-foreground">{selected === currentQuestion.answer ? 'Resposta correta!' : 'Vamos aprender com essa resposta'}</p>
               <p className="text-sm text-muted-foreground">{currentQuestion.explanation}</p>
-              <button onClick={() => navigate(`/bible?book=${encodeURIComponent(currentQuestion.reference.split(/\s+(?=\d)/)[0])}&chapter=${currentQuestion.reference.match(/\d+/)?.[0] ?? 1}`)} className="mt-2 text-left text-xs font-bold text-secondary underline underline-offset-2">📜 {currentQuestion.reference} — abrir Bíblia</button>
+              <button onClick={() => {
+                const match = currentQuestion.reference.match(/^(.+)\s+(\d+):/);
+                if (match) navigate(`/bible?book=${encodeURIComponent(match[1])}&chapter=${match[2]}`);
+                else toast.error('Não foi possível abrir esta referência automaticamente.');
+              }} className="mt-2 text-left text-xs font-bold text-secondary underline underline-offset-2">📜 {currentQuestion.reference} — abrir Bíblia</button>
             </div>}
             <button disabled={!answered} onClick={nextQuestion} className="mt-5 w-full rounded-xl bg-gradient-primary py-3.5 font-bold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">
               {questionIndex === lessonQuestions.length - 1 ? 'Ver resultado' : 'Próxima pergunta'} <ChevronRight size={17} className="ml-1 inline" />

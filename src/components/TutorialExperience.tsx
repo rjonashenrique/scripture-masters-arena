@@ -57,6 +57,14 @@ export default function TutorialExperience() {
       if (location.pathname === '/' && !parsed.onboarding_completed && !parsed.onboarding_skipped) {
         setStep(Math.min(Math.max(parsed.current_step ?? 0, 0), lessons.length - 1));
         setOpen(true);
+      } else {
+        const contextualRoutes = ['/clans', '/shop', '/inventory', '/profile', '/battle', '/battle-royale', '/ranking', '/quiz'];
+        const route = contextualRoutes.find((path) => location.pathname === path || location.pathname.startsWith(`${path}/`));
+        const seenKey = `bqm_context_seen_v1_${user.id}_${route ?? ''}`;
+        if (route && (parsed.onboarding_completed || parsed.onboarding_skipped) && !localStorage.getItem(seenKey)) {
+          localStorage.setItem(seenKey, 'true');
+          setContextHelp(true);
+        }
       }
     } catch {
       setData({});

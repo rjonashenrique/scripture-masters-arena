@@ -33,7 +33,7 @@ export function useSettings() {
   return { items, loading, update };
 }
 
-export default function SettingsTab({ only }: { only?: string }) {
+export default function SettingsTab({ only, title }: { only?: string; title?: string }) {
   const { items, loading, update } = useSettings();
   if (loading) return <p className="text-sm text-muted-foreground py-10 text-center">Carregando...</p>;
 
@@ -46,7 +46,7 @@ export default function SettingsTab({ only }: { only?: string }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-foreground">{only ? 'Modos de Jogo' : 'Configurações'}</h2>
+        <h2 className="text-xl font-bold text-foreground">{title ?? (only === 'modos' ? 'Modos de Jogo' : 'Configurações')}</h2>
         <p className="text-xs text-muted-foreground">
           Cada chave é validada no servidor; jogadores não conseguem alterá-las.
         </p>

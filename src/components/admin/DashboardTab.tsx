@@ -46,6 +46,7 @@ export default function DashboardTab() {
   const [data, setData] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -66,13 +67,13 @@ export default function DashboardTab() {
       setLoading(false);
     })();
     return () => { alive = false; };
-  }, [days]);
+  }, [days, reloadKey]);
 
   if (loading && !data) return <p className="text-sm text-muted-foreground py-10 text-center" role="status">Carregando visão geral...</p>;
   if (!data) return (
     <div className="py-10 text-center space-y-3" role="alert">
       <p className="text-sm text-muted-foreground">{errorMessage ?? 'Não foi possível carregar as métricas.'}</p>
-      <Button size="sm" variant="outline" onClick={() => { setErrorMessage(null); setLoading(true); setDays((current) => current); }}>
+      <Button size="sm" variant="outline" onClick={() => { setErrorMessage(null); setLoading(true); setReloadKey((key) => key + 1); }}>
         Tentar novamente
       </Button>
     </div>

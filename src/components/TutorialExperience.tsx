@@ -173,7 +173,7 @@ export default function TutorialExperience() {
                 {current.key === 'knowledge' && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">{knowledgeOptions.map((option) => <button key={option} type="button" aria-pressed={data.knowledge === option} onClick={() => persist({ ...data, knowledge: option })} className={`rounded-xl border p-3 text-left text-sm font-semibold ${data.knowledge === option ? 'border-secondary bg-secondary/10 text-foreground' : 'border-border bg-muted/30 text-foreground'}`}>{option}</button>)}</div>}
                 <p className="text-xs text-muted-foreground leading-relaxed mb-5">{current.detail}</p>
                 {current.key === 'finish' && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
-                  <button type="button" onClick={() => { finish(false); navigate('/reading-plan'); }} className="rounded-xl border border-border p-3 text-sm font-bold text-foreground">🗺️ Começar Jornada</button>
+                  <button type="button" onClick={() => { finish(false); navigate('/journey'); }} className="rounded-xl border border-border p-3 text-sm font-bold text-foreground">🗺️ Começar Jornada</button>
                   <button type="button" onClick={() => { finish(false); navigate('/quiz'); }} className="rounded-xl border border-border p-3 text-sm font-bold text-foreground">🎮 Jogar Quiz</button>
                   <button type="button" onClick={() => { finish(false); navigate('/clans'); }} className="rounded-xl border border-border p-3 text-sm font-bold text-foreground">🛡️ Conhecer Clãs</button>
                   <button type="button" onClick={() => { finish(false); navigate('/shop'); }} className="rounded-xl border border-border p-3 text-sm font-bold text-foreground">🛍️ Abrir Loja</button>

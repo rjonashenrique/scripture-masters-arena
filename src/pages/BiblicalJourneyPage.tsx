@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, BookOpen, Check, CheckCircle2, ChevronRight, Circle, LockKeyhole, RotateCcw, Trophy, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { biblicalJourney, type JourneyQuestion } from '@/data/biblicalJourney';
+import { biblicalJourney } from '@/data/biblicalJourney';
 
 type JourneyProgress = {
   completedChapters: number[];
@@ -40,6 +40,7 @@ export default function BiblicalJourneyPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [finishedLesson, setFinishedLesson] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
+  const [lessonResult, setLessonResult] = useState<{ correct: number; total: number } | null>(null);
 
   const currentChapter = biblicalJourney.find((chapter) => chapter.id === activeChapter) ?? null;
   const lessonQuestions = useMemo(() => {
@@ -101,6 +102,7 @@ export default function BiblicalJourneyPage() {
     setAnswers({});
     setFinishedLesson(false);
     setReviewMode(false);
+    setLessonResult(null);
   };
 
   const beginReview = () => {
@@ -110,6 +112,7 @@ export default function BiblicalJourneyPage() {
     setAnswers({});
     setFinishedLesson(false);
     setReviewMode(true);
+    setLessonResult(null);
   };
 
   const chooseAnswer = (option: number) => {
@@ -124,6 +127,8 @@ export default function BiblicalJourneyPage() {
       return;
     }
 
+    const finalCorrect = lessonQuestions.reduce((total, q) => total + (answers[q.id] === q.answer ? 1 : 0), 0);
+    setLessonResult({ correct: finalCorrect, total: lessonQuestions.length });
     const missedNow = lessonQuestions.filter((q) => answers[q.id] !== q.answer).map((q) => q.id);
     if (reviewMode) {
       const remainingMissed = progress.missedQuestionIds.filter((id) => missedNow.includes(id));
@@ -151,6 +156,7 @@ export default function BiblicalJourneyPage() {
     setAnswers({});
     setFinishedLesson(false);
     setReviewMode(false);
+    setLessonResult(null);
   };
 
   if (loading) {
@@ -170,14 +176,14 @@ export default function BiblicalJourneyPage() {
     </main>;
   }
 
-  if (activeChapter !== null && currentChapter && !finishedLesson && currentQuestion) {
+  if ((activeChapter !== null || reviewMode) && !finishedLesson && currentQuestion) {
     const selected = answers[currentQuestion.id];
     const answered = selected !== undefined;
     return <main className="min-h-screen bg-gradient-hero pb-10">
       <div className="mx-auto max-w-md px-5 pt-10 safe-area-top">
         <div className="mb-5 flex items-center gap-3">
           <button onClick={exitLesson} aria-label="Sair da lição" className="rounded-lg p-2 text-muted-foreground hover:bg-muted"><ArrowLeft size={21} /></button>
-          <div className="min-w-0 flex-1"><p className="text-xs text-secondary font-semibold">CAPÍTULO {currentChapter.id} · LIÇÃO 1</p><h1 className="truncate text-lg font-extrabold text-foreground">{currentChapter.lessonTitle}</h1></div>
+          <div className="min-w-0 flex-1"><p className="text-xs text-secondary font-semibold">{reviewMode ? 'REVISÃO' : `CAPÍTULO ${currentChapter?.id} · LIÇÃO 1`}</p><h1 className="truncate text-lg font-extrabold text-foreground">{reviewMode ? 'Revisar respostas erradas' : currentChapter?.lessonTitle}</h1></div>
           <span className="text-xs font-bold text-muted-foreground">{questionIndex + 1}/{lessonQuestions.length}</span>
         </div>
         <div className="mb-5 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Progresso da lição" aria-valuemin={0} aria-valuemax={lessonQuestions.length} aria-valuenow={questionIndex + (answered ? 1 : 0)}>
@@ -221,11 +227,11 @@ export default function BiblicalJourneyPage() {
   if (finishedLesson) {
     return <main className="min-h-screen bg-gradient-hero p-5 pt-12">
       <section className="mx-auto max-w-md glass-card p-6 text-center">
-        <div className="mb-3 text-5xl">{correctCount === lessonQuestions.length ? '🏆' : correctCount > 0 ? '⭐' : '📖'}</div>
+        <div className="mb-3 text-5xl">{(lessonResult?.correct ?? correctCount) === (lessonResult?.total ?? lessonQuestions.length) ? '🏆' : (lessonResult?.correct ?? correctCount) > 0 ? '⭐' : '📖'}</div>
         <h1 className="mb-2 text-2xl font-extrabold text-foreground">{reviewMode ? 'Revisão concluída!' : 'Lição concluída!'}</h1>
-        <p className="mb-1 text-4xl font-black text-gradient-gold">{correctCount}/{lessonQuestions.length}</p>
+        <p className="mb-1 text-4xl font-black text-gradient-gold">{lessonResult?.correct ?? correctCount}/{lessonResult?.total ?? lessonQuestions.length}</p>
         <p className="mb-5 text-sm text-muted-foreground">respostas corretas</p>
-        {correctCount === lessonQuestions.length && !reviewMode && <p className="mb-5 rounded-xl bg-success/10 p-3 text-sm text-foreground">Capítulo concluído e próximo capítulo desbloqueado neste dispositivo.</p>}
+        {(lessonResult?.correct ?? correctCount) === (lessonResult?.total ?? lessonQuestions.length) && !reviewMode && <p className="mb-5 rounded-xl bg-success/10 p-3 text-sm text-foreground">Capítulo concluído e próximo capítulo desbloqueado neste dispositivo.</p>}
         <div className="space-y-3">
           {progress.missedQuestionIds.length > 0 && <button onClick={beginReview} className="w-full rounded-xl border border-border py-3 font-bold text-foreground">Revisar respostas erradas ({progress.missedQuestionIds.length})</button>}
           <button onClick={exitLesson} className="w-full rounded-xl bg-gradient-primary py-3 font-bold text-primary-foreground">Voltar à Jornada</button>

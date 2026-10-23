@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, DownloadCloud, Search, Sparkles, Check } from 'lucide-react';
+import { Plus, Pencil, Archive, ArchiveRestore, DownloadCloud, Search, Sparkles, Check } from 'lucide-react';
 import { questions as staticQuestions } from '@/data/questions';
 
 const CATEGORIES = ['Antigo Testamento', 'Novo Testamento', 'Vida de Jesus', 'Personagens da Bíblia', 'Milagres de Jesus', 'Profetas', 'Conhecimento Geral'];
@@ -35,6 +35,7 @@ interface DBQuestion {
   difficulty: string;
   category: string;
   reference: string | null;
+  status?: string;
 }
 
 const emptyForm = {
@@ -109,7 +110,7 @@ export default function QuestionsTab() {
     setLoading(true);
     const { data } = await supabase
       .from('quiz_questions')
-      .select('id, question, options, correct_answer, explanation, difficulty, category, reference')
+      .select('id, question, options, correct_answer, explanation, difficulty, category, reference, status')
       .order('id', { ascending: true })
       .limit(1000);
     setItems(((data as any[]) ?? []).map((d) => ({ ...d, options: Array.isArray(d.options) ? d.options : [] })));
@@ -182,11 +183,15 @@ export default function QuestionsTab() {
     load();
   };
 
-  const remove = async (id: number) => {
-    if (!window.confirm('Excluir esta pergunta?')) return;
-    const { error } = await supabase.from('quiz_questions').delete().eq('id', id);
-    if (error) return toast.error('Erro ao excluir');
-    toast.success('Excluída');
+  const setQuestionStatus = async (question: DBQuestion, status: 'archived' | 'draft') => {
+    const action = status === 'archived' ? 'arquivar' : 'restaurar como rascunho';
+    if (!window.confirm(`Deseja ${action} esta pergunta? O histórico de partidas será preservado.`)) return;
+    const { error } = await (supabase.rpc as any)('admin_set_question_status', {
+      p_id: question.id,
+      p_status: status,
+    });
+    if (error) return toast.error('Não foi possível atualizar a pergunta: ' + error.message);
+    toast.success(status === 'archived' ? 'Pergunta arquivada; histórico preservado.' : 'Pergunta restaurada como rascunho.');
     load();
   };
 
@@ -231,15 +236,16 @@ export default function QuestionsTab() {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">{q.question}</p>
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  {q.difficulty} • {q.category}
+                  {q.difficulty} • {q.category} • {q.reference || 'Sem referência'}
+                  <span className="ml-1 rounded bg-muted px-1.5 py-0.5">{q.status === 'archived' ? 'Arquivada' : q.status === 'draft' ? 'Rascunho' : 'Publicada'}</span>
                 </p>
               </div>
               <div className="flex gap-1 shrink-0">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(q)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Editar pergunta" onClick={() => openEdit(q)}>
                   <Pencil size={14} />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => remove(q.id)}>
-                  <Trash2 size={14} className="text-destructive" />
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={q.status === 'archived' ? 'Restaurar como rascunho' : 'Arquivar pergunta'} onClick={() => setQuestionStatus(q, q.status === 'archived' ? 'draft' : 'archived')}>
+                  {q.status === 'archived' ? <ArchiveRestore size={14} /> : <Archive size={14} className="text-muted-foreground" />}
                 </Button>
               </div>
             </div>

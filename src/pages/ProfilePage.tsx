@@ -74,7 +74,7 @@ export default function ProfilePage() {
       }
       if (tab === 'overview') {
         const { data, error } = await (supabase.from as any)('clan_members')
-          .select('role, clans:clan_id(id, name, tag, emblem, league, level, member_count, max_members)')
+          .select('role, clans:clans(id, name, tag, emblem, league, level, member_count, max_members)')
           .eq('user_id', user.id).maybeSingle();
         if (error) throw error;
         const row = data as any;

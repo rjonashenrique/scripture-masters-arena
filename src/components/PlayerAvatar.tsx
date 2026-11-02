@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { FRAME_CLASS, EFFECT_CLASS } from '@/hooks/useShop';
+import { getFrameClass, getEffectClass } from '@/hooks/useShop';
 
 export default function PlayerAvatar({
   icon, frameStyle, effectStyle, fallback, size = 80, label,
@@ -13,8 +13,8 @@ export default function PlayerAvatar({
       aria-label={label ?? 'Avatar do jogador'}
       className={cn(
         'mx-auto rounded-full bg-gradient-gold flex items-center justify-center',
-        frameStyle ? FRAME_CLASS[frameStyle] : !effectStyle && 'shadow-glow-gold',
-        effectStyle && EFFECT_CLASS[effectStyle],
+        getFrameClass(frameStyle) || (!effectStyle && 'shadow-glow-gold'),
+        getEffectClass(effectStyle),
       )}
       style={{ width: size, height: size }}
     >

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import PlayerAvatar from '@/components/PlayerAvatar';
 import { ItemPreviewIcon } from '@/components/shop/ShopItemCard';
 import {
-  RARITY, CATEGORY_LABELS, CLAN_BANNER_CLASS, FRAME_CLASS, fmt, itemStatus, lockReason,
+  RARITY, CATEGORY_LABELS, getClanBannerClass, getFrameClass, fmt, itemStatus, lockReason,
   type ShopItem, type useShop,
 } from '@/hooks/useShop';
 
@@ -94,8 +94,8 @@ export default function ItemDetailDialog({ item, shop, onClose }: { item: ShopIt
             <div className="glass-card p-4">
               <p className="text-[10px] text-muted-foreground mb-2">👁️ Visualizar</p>
               {item.category === 'clan' ? (
-                <div className={`rounded-xl p-4 ${item.clan_slot === 'banner' ? CLAN_BANNER_CLASS[item.style] ?? '' : ''}`}>
-                  <div className={`w-14 h-14 mx-auto rounded-2xl bg-gradient-primary flex items-center justify-center text-2xl ${item.clan_slot === 'frame' ? FRAME_CLASS[item.style] ?? '' : ''}`}>🛡️</div>
+                <div className={`rounded-xl p-4 ${item.clan_slot === 'banner' ? getClanBannerClass(item.style) : ''}`}>
+                  <div className={`w-14 h-14 mx-auto rounded-2xl bg-gradient-primary flex items-center justify-center text-2xl ${item.clan_slot === 'frame' ? getFrameClass(item.style) : ''}`}>🛡️</div>
                   <p className="text-xs font-bold text-foreground mt-2">Seu clã</p>
                 </div>
               ) : item.category === 'badge' ? (

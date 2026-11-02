@@ -50,6 +50,11 @@ export const FRAME_CLASS: Record<string, string> = {
   legendary: 'ring-4 ring-secondary shadow-glow-gold',
   guardian: 'ring-[6px] ring-secondary shadow-glow-gold outline outline-2 outline-offset-4 outline-primary',
 };
+/** Resolve classes cosméticas com fallback seguro para IDs antigos ou desconhecidos. */
+export const getFrameClass = (style?: string | null): string => (style && FRAME_CLASS[style]) || '';
+export const getClanBannerClass = (style?: string | null): string => (style && CLAN_BANNER_CLASS[style]) || '';
+export const getEffectClass = (style?: string | null): string => (style && EFFECT_CLASS[style]) || '';
+
 export const EFFECT_CLASS: Record<string, string> = {
   glow: 'shadow-glow-gold',
   pulse: 'shadow-glow-blue motion-safe:animate-pulse',

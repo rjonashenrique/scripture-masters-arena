@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Pencil, Archive, ArchiveRestore, DownloadCloud, Search, Sparkles, Check } from 'lucide-react';
+import { Plus, Pencil, Archive, ArchiveRestore, DownloadCloud, Search, Sparkles, Check, Trash2 } from 'lucide-react';
 import { questions as staticQuestions } from '@/data/questions';
 
 const CATEGORIES = ['Antigo Testamento', 'Novo Testamento', 'Vida de Jesus', 'Personagens da Bíblia', 'Milagres de Jesus', 'Profetas', 'Conhecimento Geral'];

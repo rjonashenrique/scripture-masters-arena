@@ -1981,6 +1981,7 @@ export type Database = {
       level_milestone_coins: { Args: { p_level: number }; Returns: number }
       level_title: { Args: { p_level: number }; Returns: string }
       my_admin_roles: { Args: never; Returns: string[] }
+      my_church_ids: { Args: never; Returns: string[] }
       my_clan_id: { Args: never; Returns: string }
       my_clan_invites: {
         Args: never

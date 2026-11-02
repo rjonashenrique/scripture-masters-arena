@@ -170,7 +170,7 @@ export default function ShopPage() {
             {bundles.map((b) => {
               const its = b.item_ids.map((id) => items.find((i) => i.id === id)).filter(Boolean) as ShopItem[];
               const full = its.reduce((s, i) => s + i.price, 0);
-              const allOwned = its.every((i) => owned.has(i.id));
+              const allOwned = its.every((i) => shop.isOwned(i));
               return (
                 <div key={b.id} className="glass-card p-4">
                   <div className="flex items-center gap-3">

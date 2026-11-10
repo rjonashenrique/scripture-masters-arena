@@ -8,6 +8,33 @@ const corsHeaders = {
 const BIBLE_API = 'https://bible-api.com';
 const AI_GATEWAY = 'https://ai.gateway.lovable.dev/v1/chat/completions';
 
+const FALLBACK_VERSE = {
+  reference: 'João 3:16',
+  text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.',
+  verses: [{ book_name: 'João', chapter: 3, verse: 16, text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.' }],
+  translation_name: 'Almeida',
+  fallback: true,
+};
+
+async function fetchBible(ref: string): Promise<any | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(`${BIBLE_API}/${encodeURIComponent(ref)}?translation=almeida`, {
+        headers: { Accept: 'application/json' },
+      });
+      const body = await res.text();
+      if (res.ok && (res.headers.get('content-type') || '').includes('json')) {
+        return JSON.parse(body);
+      }
+      console.error(`bible-api upstream ${res.status}: ${body.slice(0, 120)}`);
+    } catch (e) {
+      console.error('bible-api fetch failed', e);
+    }
+    await new Promise((r) => setTimeout(r, 600));
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -53,8 +80,7 @@ Deno.serve(async (req) => {
       const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
       const ref = dailyVerses[dayOfYear % dailyVerses.length];
 
-      const res = await fetch(`${BIBLE_API}/${encodeURIComponent(ref)}?translation=almeida`);
-      const data = await res.json();
+      const data = (await fetchBible(ref)) ?? FALLBACK_VERSE;
 
       return new Response(JSON.stringify(data), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -63,8 +89,13 @@ Deno.serve(async (req) => {
 
     if (action === 'chapter') {
       const ref = `${book} ${chapter}`;
-      const res = await fetch(`${BIBLE_API}/${encodeURIComponent(ref)}?translation=almeida`);
-      const data = await res.json();
+      const data = await fetchBible(ref);
+      if (!data) {
+        return new Response(JSON.stringify({ error: 'Texto bíblico indisponível no momento. Tente novamente.' }), {
+          status: 503,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       return new Response(JSON.stringify(data), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -91,8 +122,7 @@ Deno.serve(async (req) => {
       const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
       const ref = dailyVerses[dayOfYear % dailyVerses.length];
 
-      const verseRes = await fetch(`${BIBLE_API}/${encodeURIComponent(ref)}?translation=almeida`);
-      const verseData = await verseRes.json();
+      const verseData = (await fetchBible(ref)) ?? FALLBACK_VERSE;
       const verseText = verseData.text?.trim() || '';
 
       const aiRes = await fetch(AI_GATEWAY, {
